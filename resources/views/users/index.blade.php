@@ -7,12 +7,32 @@
 <div class="bg-white rounded-lg shadow-md">
     <div class="flex justify-between items-center p-6 border-b border-gray-200">
         <h4 class="text-xl font-semibold text-gray-800">Users</h4>
-        <button onclick="openAddUserModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Add New User
-        </button>
+        <div class="flex items-center gap-3">
+            <select id="roleFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option value="">All Roles</option>
+                @foreach($roles as $role)
+                    <option value="{{ $role->id }}" data-code="{{ $role->code }}" {{ (string) $selectedRoleId === (string) $role->id ? 'selected' : '' }}>
+                        {{ $role->name }}
+                    </option>
+                @endforeach
+            </select>
+            <div id="eventFilterWrap" class="{{ !empty($showEventFilter) ? '' : 'hidden' }}">
+                <select id="eventFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <option value="">All Events</option>
+                    @foreach($eventsForFilter as $eventOption)
+                        <option value="{{ $eventOption->id }}" {{ (string) $selectedEventId === (string) $eventOption->id ? 'selected' : '' }}>
+                            {{ $eventOption->title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <button onclick="openAddUserModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add New User
+            </button>
+        </div>
     </div>
 
     <div class="p-6">
@@ -23,59 +43,20 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Designation</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($users as $user)
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->id }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $user->name }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $user->email }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->contact ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->created_at->format('Y-m-d H:i') }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
-                                <!-- View Button -->
-                                <a href="{{ route('users.show', $user) }}" 
-                                   class="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50 transition-colors inline-block"
-                                   title="View Details">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </a>
-
-                                <!-- Edit Button -->
-                                <button onclick="editUser(this)" 
-                                        class="text-yellow-600 hover:text-yellow-900 p-1 rounded hover:bg-yellow-50 transition-colors"
-                                        title="Edit User"
-                                        data-user="{{ $user->toJson(JSON_HEX_APOS | JSON_HEX_QUOT) }}">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </button>
-
-                                <!-- Delete Button -->
-                                <button onclick="deleteUser({{ $user->id }}, {{ json_encode($user->name) }})" 
-                                        class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                                        title="Delete User">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
+                <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                    @include('users.partials.table-rows', ['users' => $users])
                 </tbody>
             </table>
         </div>
 
-        @if($users->isEmpty())
-            <div class="text-center py-8">
+        <div id="usersEmptyState" class="text-center py-8 {{ $users->isEmpty() ? '' : 'hidden' }}">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
@@ -90,15 +71,130 @@
                     </button>
                 </div>
             </div>
-        @endif
 
-        @if($users->hasPages())
-            <div class="mt-6">
+            <div id="usersPaginationWrap" class="mt-6 {{ $users->hasPages() ? '' : 'hidden' }}">
                 {{ $users->links() }}
             </div>
-        @endif
     </div>
 </div>
 
 @include('components.user-modal')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const roleFilter = document.getElementById('roleFilter');
+    const eventFilterWrap = document.getElementById('eventFilterWrap');
+    const eventFilter = document.getElementById('eventFilter');
+    const usersTableBody = document.getElementById('usersTableBody');
+    const usersPaginationWrap = document.getElementById('usersPaginationWrap');
+    const usersEmptyState = document.getElementById('usersEmptyState');
+    const usersIndexUrl = '{{ route("users.index") }}';
+
+    function setLoading() {
+        usersTableBody.innerHTML = '<tr><td colspan="8" class="px-6 py-10 text-center text-gray-500">Loading users...</td></tr>';
+    }
+
+    function applyResponse(data, requestUrl) {
+        usersTableBody.innerHTML = data.rows_html;
+        usersPaginationWrap.innerHTML = data.pagination_html || '';
+        updateEventFilter(data.show_event_filter, data.events || [], data.selected_event_id);
+
+        if (data.pagination_html) {
+            usersPaginationWrap.classList.remove('hidden');
+        } else {
+            usersPaginationWrap.classList.add('hidden');
+        }
+
+        if (data.is_empty) {
+            usersEmptyState.classList.remove('hidden');
+        } else {
+            usersEmptyState.classList.add('hidden');
+        }
+
+        window.history.replaceState({}, '', requestUrl);
+    }
+
+    function updateEventFilter(show, events, selectedEventId) {
+        if (show) {
+            eventFilterWrap.classList.remove('hidden');
+            eventFilter.innerHTML = '<option value="">All Events</option>';
+            events.forEach(function (eventItem) {
+                const option = document.createElement('option');
+                option.value = String(eventItem.id);
+                option.textContent = eventItem.title;
+                if (String(selectedEventId || '') === String(eventItem.id)) {
+                    option.selected = true;
+                }
+                eventFilter.appendChild(option);
+            });
+        } else {
+            eventFilterWrap.classList.add('hidden');
+            eventFilter.value = '';
+        }
+    }
+
+    function buildUsersUrl(baseHref) {
+        const url = new URL(baseHref || usersIndexUrl, window.location.origin);
+        const selectedRole = roleFilter.value;
+
+        if (selectedRole) {
+            url.searchParams.set('role_id', selectedRole);
+        } else {
+            url.searchParams.delete('role_id');
+        }
+
+        if (!eventFilterWrap.classList.contains('hidden') && eventFilter.value) {
+            url.searchParams.set('event_id', eventFilter.value);
+        } else {
+            url.searchParams.delete('event_id');
+        }
+
+        return url.toString();
+    }
+
+    function fetchUsers(url) {
+        setLoading();
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Failed to load users.');
+                }
+                return data;
+            })
+            .then(data => applyResponse(data, url))
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Load Failed',
+                    text: 'Unable to load filtered users. Please try again.'
+                });
+            });
+    }
+
+    roleFilter.addEventListener('change', function () {
+        eventFilter.value = '';
+        fetchUsers(buildUsersUrl(usersIndexUrl));
+    });
+
+    eventFilter.addEventListener('change', function () {
+        fetchUsers(buildUsersUrl(usersIndexUrl));
+    });
+
+    usersPaginationWrap.addEventListener('click', function (event) {
+        const link = event.target.closest('a');
+        if (!link) {
+            return;
+        }
+
+        event.preventDefault();
+        fetchUsers(buildUsersUrl(link.href));
+    });
+});
+</script>
 @endsection

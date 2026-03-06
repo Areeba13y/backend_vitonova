@@ -60,6 +60,13 @@
                             <span class="text-gray-900 font-medium">{{ $user->email }}</span>
                         </div>
 
+                        @if($user->designation)
+                        <div class="flex flex-col">
+                            <label class="text-sm font-medium text-gray-500 uppercase tracking-wide">Designation</label>
+                            <span class="text-gray-900 font-medium">{{ $user->designation }}</span>
+                        </div>
+                        @endif
+
                         @if($user->contact)
                         <div class="flex flex-col">
                             <label class="text-sm font-medium text-gray-500 uppercase tracking-wide">Contact</label>

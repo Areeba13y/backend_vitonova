@@ -51,6 +51,14 @@
                         <span id="addressError" class="text-red-500 text-sm hidden"></span>
                     </div>
 
+                    <!-- Designation Field -->
+                    <div class="mb-4">
+                        <label for="designation" class="block text-sm font-medium text-gray-700 mb-2">Designation</label>
+                        <input id="designation" type="text" name="designation"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        <span id="designationError" class="text-red-500 text-sm hidden"></span>
+                    </div>
+
                     <!-- Password Field -->
                     <div class="mb-4" id="passwordField">
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
@@ -285,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('email').value = user.email || '';
         document.getElementById('contact').value = user.contact || '';
         document.getElementById('address').value = user.address || '';
+        document.getElementById('designation').value = user.designation || '';
         
         // Make password optional for edit
         document.getElementById('password').required = false;

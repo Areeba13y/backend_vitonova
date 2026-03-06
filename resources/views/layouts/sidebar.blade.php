@@ -28,6 +28,22 @@
                 </svg>
                 <span class="font-medium">User Management</span>
             </a>
+
+            <!-- Event Management -->
+            <a href="{{ route('events.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('events.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                </svg>
+                <span class="font-medium">Event Management</span>
+            </a>
+
+            <!-- Event Registrations -->
+            <a href="{{ route('event-registrations.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('event-registrations.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17 20h5V4H2v16h5v-2H4V6h16v12h-3v2zM9 8h9v2H9V8zm0 4h9v2H9v-2zm0 4h5v2H9v-2zm-4 0l2 2 4-4-1.41-1.41L7 15.17l-.59-.58L5 16z"/>
+                </svg>
+                <span class="font-medium">Event Registrations</span>
+            </a>
             
         </nav>
         

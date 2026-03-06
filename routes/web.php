@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +20,8 @@ Route::get('/test', function () {
         'routes' => [
             'dashboard' => route('dashboard'),
             'users.index' => route('users.index'),
+            'events.index' => route('events.index'),
+            'event_registrations.index' => route('event-registrations.index'),
             'login' => route('login')
         ]
     ]);
@@ -36,4 +40,11 @@ Route::middleware('auth')->group(function () {
     
     // User CRUD routes
     Route::resource('users', UserController::class);
+    Route::resource('events', EventController::class);
+
+    Route::prefix('event-registrations')->name('event-registrations.')->group(function () {
+        Route::get('/', [EventRegistrationController::class, 'index'])->name('index');
+        Route::get('/{event}', [EventRegistrationController::class, 'eventRegistrations'])->name('event');
+        Route::get('/{event}/registrations/{registration}', [EventRegistrationController::class, 'show'])->name('show');
+    });
 });

@@ -22,7 +22,7 @@
 <!-- Quick Actions -->
 <div class="bg-white rounded-lg shadow-md p-6 mb-8">
     <h2 class="text-xl font-semibold text-gray-800 mb-6">Quick Actions</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- User Management -->
         <a href="/backend_vitonova/users" class="flex flex-col items-center p-6 border border-gray-200 rounded-lg group transition-all duration-200">
             <div class="rounded-lg mb-4 p-4 shadow-lg" style="background: linear-gradient(135deg, #3b82f6 60%, #06b6d4 100%); color: #fff;">
@@ -32,6 +32,17 @@
             </div>
             <span class="font-semibold">User Management</span>
             <span class="text-sm text-gray-500">Manage system users</span>
+        </a>
+
+        <!-- Event Management -->
+        <a href="{{ route('events.index') }}" class="flex flex-col items-center p-6 border border-gray-200 rounded-lg group transition-all duration-200">
+            <div class="rounded-lg mb-4 p-4 shadow-lg" style="background: linear-gradient(135deg, #22c55e 60%, #10b981 100%); color: #fff;">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                </svg>
+            </div>
+            <span class="font-semibold">Event Management</span>
+            <span class="text-sm text-gray-500">Create and manage events</span>
         </a>
         
         <!-- Settings -->
@@ -57,5 +68,4 @@
         </a>
     </div>
 </div>
-
 @endsection

@@ -2,17 +2,61 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
+use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::paginate(10);
-        return view('users.index', compact('users'));
+        $selectedRoleId = $request->input('role_id');
+        $selectedEventId = $request->input('event_id');
+        $eventRegistrantRole = Role::query()->where('code', 'event_registrant')->first();
+        $showEventFilter = $selectedRoleId && $eventRegistrantRole && (int) $selectedRoleId === (int) $eventRegistrantRole->id;
+
+        $eventsForFilter = collect();
+        if ($showEventFilter) {
+            $eventsForFilter = Event::query()
+                ->latest()
+                ->get(['id', 'title']);
+        }
+
+        $users = User::query()
+            ->with('role')
+            ->when($selectedRoleId, function ($query) use ($selectedRoleId) {
+                $query->where('role_id', $selectedRoleId);
+            })
+            ->when($showEventFilter && $selectedEventId, function ($query) use ($selectedEventId) {
+                $query->whereHas('eventRegistrations', function ($registrationQuery) use ($selectedEventId) {
+                    $registrationQuery->where('event_id', $selectedEventId);
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'rows_html' => view('users.partials.table-rows', compact('users'))->render(),
+                'pagination_html' => $users->hasPages() ? $users->links()->render() : '',
+                'is_empty' => $users->isEmpty(),
+                'show_event_filter' => (bool) $showEventFilter,
+                'selected_event_id' => $showEventFilter ? $selectedEventId : null,
+                'events' => $eventsForFilter->map(fn ($event) => [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                ])->values(),
+            ]);
+        }
+
+        $roles = Role::query()->orderBy('name')->get(['id', 'name', 'code']);
+
+        return view('users.index', compact('users', 'roles', 'selectedRoleId', 'selectedEventId', 'showEventFilter', 'eventsForFilter'));
     }
 
     public function create()
@@ -29,6 +73,7 @@ class UserController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'contact' => 'nullable|string|max:255',
                 'address' => 'nullable|string',
+                'designation' => 'nullable|string|max:255',
             ]);
 
             $user = User::create([
@@ -37,6 +82,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'contact' => $request->contact,
                 'address' => $request->address,
+                'designation' => $request->designation,
             ]);
 
             return response()->json([
@@ -86,6 +132,7 @@ class UserController extends Controller
                 'password' => 'nullable|string|min:8|confirmed',
                 'contact' => 'nullable|string|max:255',
                 'address' => 'nullable|string',
+                'designation' => 'nullable|string|max:255',
             ]);
 
             $updateData = [
@@ -93,6 +140,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'contact' => $request->contact,
                 'address' => $request->address,
+                'designation' => $request->designation,
             ];
 
             if ($request->password) {
