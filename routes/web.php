@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TeamApplicationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,5 +47,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [EventRegistrationController::class, 'index'])->name('index');
         Route::get('/{event}', [EventRegistrationController::class, 'eventRegistrations'])->name('event');
         Route::get('/{event}/registrations/{registration}', [EventRegistrationController::class, 'show'])->name('show');
+    });
+
+    // Team Application routes
+    Route::prefix('team-applications')->name('team-applications.')->group(function () {
+        Route::get('/', [TeamApplicationController::class, 'index'])->name('index');
+        Route::get('/{id}/download', [TeamApplicationController::class, 'download'])->name('download');
+        Route::post('/{id}/approve', [TeamApplicationController::class, 'approve'])->name('approve');
+        Route::delete('/{id}', [TeamApplicationController::class, 'destroy'])->name('destroy');
     });
 });
