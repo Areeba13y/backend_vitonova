@@ -57,3 +57,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [TeamApplicationController::class, 'destroy'])->name('destroy');
     });
 });
+use App\Http\Controllers\ContactMessageController;
+
+Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/contacts', [ContactMessageController::class, 'index'])->name('admin.contacts.index');
+    Route::patch('/admin/contacts/{message}/read', [ContactMessageController::class, 'markRead'])->name('admin.contacts.markRead');
+    Route::delete('/admin/contacts/{message}', [ContactMessageController::class, 'destroy'])->name('admin.contacts.destroy');
+});

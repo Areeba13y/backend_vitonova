@@ -52,6 +52,14 @@
                 </svg>
                 <span class="font-medium">Team Applications</span>
             </a>
+
+            <!-- Contact Messages -->
+            <a href="{{ route('admin.contacts.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('admin.contacts.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+                <span class="font-medium">Contact Messages</span>
+            </a>
             
         </nav>
         
@@ -85,9 +93,7 @@
 </div>
 
 <script>
-    // Load on page load
     document.addEventListener('DOMContentLoaded', function() {
-        // Handle logout form
         const logoutForm = document.getElementById('sidebar-logout-form');
         
         if (logoutForm) {
@@ -98,7 +104,6 @@
                 const logoutText = button.querySelector('.sidebar-logout-text');
                 const logoutLoading = button.querySelector('.sidebar-logout-loading');
                 
-                // Show loading state
                 button.disabled = true;
                 logoutText.classList.add('hidden');
                 logoutLoading.classList.remove('hidden');
@@ -136,7 +141,6 @@
                         confirmButtonText: 'Try Again'
                     });
                     
-                    // Reset button state
                     button.disabled = false;
                     logoutText.classList.remove('hidden');
                     logoutLoading.classList.add('hidden');
