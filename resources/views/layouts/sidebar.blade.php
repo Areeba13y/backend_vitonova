@@ -44,6 +44,13 @@
                 <span class="font-medium">Event Management</span>
             </a>
 
+            <a href="{{ route('collaborations.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('collaborations.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                </svg>
+                <span class="font-medium">Collaborations</span>
+            </a>
+
             <!-- Event Registrations -->
             <a href="{{ route('event-registrations.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('event-registrations.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
                 <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">

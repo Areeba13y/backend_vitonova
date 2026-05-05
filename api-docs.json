@@ -1,0 +1,191 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Vitonova API",
+    "version": "1.0.0",
+    "description": "API documentation for Vitonova backend."
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "summary": "Get all users by role",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "description": "Role code (default: team_member)",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "users": { "type": "array", "items": { "$ref": "#/components/schemas/User" } }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Role not found"
+          }
+        }
+      }
+    },
+    "/contact": {
+      "post": {
+        "summary": "Submit contact form",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "name": { "type": "string" },
+                  "email": { "type": "string", "format": "email" }
+                },
+                "required": ["message"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/upcoming": {
+      "get": {
+        "summary": "Get upcoming events",
+        "responses": {
+          "200": {
+            "description": "Upcoming events list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "date": { "type": "string", "format": "date" },
+                    "events": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{event}/register": {
+      "post": {
+        "summary": "Register for an event",
+        "parameters": [
+          {
+            "name": "event",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "interest": { "type": "string" },
+                  "contact": { "type": "string" }
+                },
+                "required": ["interest", "contact"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Registration confirmation"
+          }
+        }
+      }
+    },
+    "/join-team": {
+      "post": {
+        "summary": "Submit a team application",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "position": { "type": "string" },
+                  "resume": { "type": "string", "format": "binary" }
+                },
+                "required": ["position", "resume"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Application submitted confirmation"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "role_id": { "type": "integer" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "contact": { "type": "string" },
+          "address": { "type": "string" },
+          "designation": { "type": "string" },
+          "profile_picture": { "type": "string" },
+          "details": { "type": "string" }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "category": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "submission_deadline": { "type": "string", "format": "date" },
+          "event_date": { "type": "string", "format": "date" },
+          "image": { "type": "string" }
+        }
+      }
+    }
+  }
+}

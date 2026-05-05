@@ -12,40 +12,30 @@ class ContactMessageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
             'message' => 'required|string',
         ]);
 
-        // If user is authenticated, reuse their account.
-        // Otherwise, validate guest identity and reuse the same account by email.
-        if (Auth::check()) {
-            $contactUser = Auth::user();
-        } else {
-            $request->validate([
-                'name'  => 'required|string|max:255',
-                'email' => 'required|email',
-            ]);
+        // Always use the provided name/email from the form.
+        // Find existing user by email (including soft-deleted) or create a new one.
+        $contactUser = User::withTrashed()->firstOrCreate(
+            ['email' => $request->email],
+            [
+                'name' => $request->name,
+                'password' => bcrypt(uniqid()),
+            ]
+        );
 
-            // Store guest email exactly as submitted.
-            // Reuse existing user record when email already exists.
-            $contactUser = User::withTrashed()->firstOrCreate(
-                ['email' => $request->email],
-                [
-                    'name' => $request->name,
-                    'password' => bcrypt(uniqid()),
-                ]
-            );
-
-            if ($contactUser->trashed()) {
-                $contactUser->restore();
-            }
-
-            // Keep latest submitted guest name in sync.
-            if ($contactUser->name !== $request->name) {
-                $contactUser->update(['name' => $request->name]);
-            }
+        if ($contactUser->trashed()) {
+            $contactUser->restore();
         }
 
-        // Always create a new message row for the same user/email and mark as unread.
+        // Keep latest submitted name in sync.
+        if ($contactUser->name !== $request->name) {
+            $contactUser->update(['name' => $request->name]);
+        }
+
         ContactMessage::create([
             'user_id' => $contactUser->id,
             'message' => $request->message,

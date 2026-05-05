@@ -5,9 +5,26 @@
 
 @section('content')
 <div class="bg-white rounded-lg shadow-md">
-    <div class="flex justify-between items-center p-6 border-b border-gray-200">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-6 border-b border-gray-200 gap-4">
         <h4 class="text-xl font-semibold text-gray-800">Users</h4>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
+            <!-- Search Input -->
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="pl-10 pr-10 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-64 transition-shadow"
+                    placeholder="Search by name, email, designation..."
+                    value="{{ $search ?? '' }}"
+                >
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                @if(!empty($search))
+                <button type="button" id="clearSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+                @endif
+            </div>
+
             <select id="roleFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option value="">All Roles</option>
                 @foreach($roles as $role)
@@ -16,6 +33,16 @@
                     </option>
                 @endforeach
             </select>
+
+            <select id="unitFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option value="">All Units</option>
+                @foreach($units as $unit)
+                    <option value="{{ $unit->id }}" {{ (string) ($selectedUnitId ?? '') === (string) $unit->id ? 'selected' : '' }}>
+                        {{ $unit->name }}
+                    </option>
+                @endforeach
+            </select>
+
             <div id="eventFilterWrap" class="{{ !empty($showEventFilter) ? '' : 'hidden' }}">
                 <select id="eventFilter" class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                     <option value="">All Events</option>
@@ -26,7 +53,7 @@
                     @endforeach
                 </select>
             </div>
-            <button onclick="openAddUserModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+            <button onclick="openAddUserModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center whitespace-nowrap">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -85,12 +112,18 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const roleFilter = document.getElementById('roleFilter');
+    const unitFilter = document.getElementById('unitFilter');
     const eventFilterWrap = document.getElementById('eventFilterWrap');
     const eventFilter = document.getElementById('eventFilter');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearch');
     const usersTableBody = document.getElementById('usersTableBody');
     const usersPaginationWrap = document.getElementById('usersPaginationWrap');
     const usersEmptyState = document.getElementById('usersEmptyState');
     const usersIndexUrl = '{{ route("users.index") }}';
+
+    // Debounce timer
+    let searchTimeout;
 
     function setLoading() {
         usersTableBody.innerHTML = '<tr><td colspan="8" class="px-6 py-10 text-center text-gray-500">Loading users...</td></tr>';
@@ -138,11 +171,25 @@ document.addEventListener('DOMContentLoaded', function () {
     function buildUsersUrl(baseHref) {
         const url = new URL(baseHref || usersIndexUrl, window.location.origin);
         const selectedRole = roleFilter.value;
+        const selectedUnit = unitFilter.value;
+        const searchQuery = searchInput.value.trim();
+
+        if (searchQuery) {
+            url.searchParams.set('search', searchQuery);
+        } else {
+            url.searchParams.delete('search');
+        }
 
         if (selectedRole) {
             url.searchParams.set('role_id', selectedRole);
         } else {
             url.searchParams.delete('role_id');
+        }
+
+        if (selectedUnit) {
+            url.searchParams.set('unit_id', selectedUnit);
+        } else {
+            url.searchParams.delete('unit_id');
         }
 
         if (!eventFilterWrap.classList.contains('hidden') && eventFilter.value) {
@@ -180,8 +227,51 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    // Live search with debounce
+    searchInput.addEventListener('input', function () {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+
+        // Show/hide clear button
+        if (clearSearchBtn) {
+            clearSearchBtn.style.display = query ? 'block' : 'none';
+        }
+
+        // Debounce: wait 300ms after typing stops
+        searchTimeout = setTimeout(() => {
+            fetchUsers(buildUsersUrl(usersIndexUrl));
+        }, 300);
+    });
+
+    // Also trigger search on Enter key
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            clearTimeout(searchTimeout);
+            fetchUsers(buildUsersUrl(usersIndexUrl));
+        }
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+            fetchUsers(buildUsersUrl(usersIndexUrl));
+        }
+    });
+
+    // Clear search
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function () {
+            searchInput.value = '';
+            this.style.display = 'none';
+            searchInput.focus();
+            fetchUsers(buildUsersUrl(usersIndexUrl));
+        });
+    }
+
     roleFilter.addEventListener('change', function () {
-        eventFilter.value = '';
+        unitFilter.value = '';
+        fetchUsers(buildUsersUrl(usersIndexUrl));
+    });
+
+    unitFilter.addEventListener('change', function () {
         fetchUsers(buildUsersUrl(usersIndexUrl));
     });
 

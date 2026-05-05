@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CollaborationController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\UserController;
@@ -43,6 +44,8 @@ Route::middleware('auth')->group(function () {
     // User CRUD routes
     Route::resource('users', UserController::class);
     Route::resource('events', EventController::class);
+    Route::resource('collaborations', CollaborationController::class);
+    Route::patch('collaborations/{collaboration}/toggle-active', [CollaborationController::class, 'toggleActive'])->name('collaborations.toggle-active');
     Route::resource('units', UnitController::class)->except(['show', 'create', 'edit']);
 
     Route::prefix('event-registrations')->name('event-registrations.')->group(function () {

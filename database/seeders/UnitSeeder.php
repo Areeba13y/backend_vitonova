@@ -20,6 +20,7 @@ class UnitSeeder extends Seeder
             'Social Media Handling Unit',
             'Scholarship Guidance Unit',
             'Event Organizing & Planning Team',
+            'Global Lead Ambassador Unit',
         ];
 
         foreach ($units as $unitName) {

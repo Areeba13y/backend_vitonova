@@ -35,7 +35,7 @@ class AuthController extends Controller
                 ]);
             }
             
-            return redirect()->intended('/dashboard');
+            return redirect()->intended(route('dashboard'));
         }
 
         if ($request->expectsJson()) {
@@ -66,6 +66,6 @@ class AuthController extends Controller
             ]);
         }
         
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

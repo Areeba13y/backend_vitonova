@@ -17,6 +17,8 @@ class UserController extends Controller
     {
         $selectedRoleId = $request->input('role_id');
         $selectedEventId = $request->input('event_id');
+        $selectedUnitId = $request->input('unit_id');
+        $search = $request->input('search');
         $eventRegistrantRole = Role::query()->where('code', 'event_registrant')->first();
         $showEventFilter = $selectedRoleId && $eventRegistrantRole && (int) $selectedRoleId === (int) $eventRegistrantRole->id;
 
@@ -32,9 +34,20 @@ class UserController extends Controller
             ->when($selectedRoleId, function ($query) use ($selectedRoleId) {
                 $query->where('role_id', $selectedRoleId);
             })
+            ->when($selectedUnitId, function ($query) use ($selectedUnitId) {
+                $query->where('unit_id', $selectedUnitId);
+            })
             ->when($showEventFilter && $selectedEventId, function ($query) use ($selectedEventId) {
                 $query->whereHas('eventRegistrations', function ($registrationQuery) use ($selectedEventId) {
                     $registrationQuery->where('event_id', $selectedEventId);
+                });
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('email', 'like', '%' . $search . '%')
+                      ->orWhere('designation', 'like', '%' . $search . '%')
+                      ->orWhere('details', 'like', '%' . $search . '%');
                 });
             })
             ->latest()
@@ -63,7 +76,7 @@ class UserController extends Controller
         $roles = Role::query()->orderBy('name')->get(['id', 'name', 'code']);
         $units = Unit::query()->orderBy('name')->get(['id', 'name']);
 
-        return view('users.index', compact('users', 'roles', 'units', 'selectedRoleId', 'selectedEventId', 'showEventFilter', 'eventsForFilter'));
+        return view('users.index', compact('users', 'roles', 'units', 'selectedRoleId', 'selectedEventId', 'selectedUnitId', 'showEventFilter', 'eventsForFilter', 'search'));
     }
 
     public function create()

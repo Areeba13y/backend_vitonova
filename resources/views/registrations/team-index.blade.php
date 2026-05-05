@@ -75,7 +75,18 @@
 </div>
 
 <div id="approveModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 px-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+        <!-- Loading Overlay -->
+        <div id="approveModalLoader" class="absolute inset-0 bg-white bg-opacity-90 rounded-lg hidden items-center justify-center z-10">
+            <div class="flex flex-col items-center gap-3">
+                <svg class="animate-spin w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-sm text-gray-600 font-medium">Processing approval...</span>
+            </div>
+        </div>
+
         <h5 class="text-lg font-semibold text-gray-800 mb-4">Approve Application</h5>
         <input type="hidden" id="approveApplicationId">
         <div class="mb-4">
@@ -93,7 +104,9 @@
         </div>
         <div class="flex justify-end gap-2">
             <button type="button" onclick="closeApproveModal()" class="px-3 py-2 bg-gray-200 rounded-md">Cancel</button>
-            <button type="button" onclick="approveApplication()" class="px-3 py-2 bg-green-600 text-white rounded-md">Approve</button>
+            <button type="button" id="confirmApproveBtn" onclick="approveApplication()" class="px-3 py-2 bg-green-600 text-white rounded-md">
+                Approve
+            </button>
         </div>
     </div>
 </div>
@@ -107,12 +120,19 @@ function openApproveModal(id) {
     document.getElementById('approveUnitId').value = '';
     document.getElementById('approveDesignation').value = '';
     const modal = document.getElementById('approveModal');
+    const loader = document.getElementById('approveModalLoader');
+
+    loader.classList.add('hidden');
+    loader.classList.remove('flex');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
 }
 
 function closeApproveModal() {
     const modal = document.getElementById('approveModal');
+    const loader = document.getElementById('approveModalLoader');
+    loader.classList.add('hidden');
+    loader.classList.remove('flex');
     modal.classList.remove('flex');
     modal.classList.add('hidden');
 }
@@ -129,6 +149,19 @@ function approveApplication() {
 
     const runApprove = () => {
         const approveUrl = approveUrlTemplate.replace('__ID__', id);
+        const btn = document.getElementById('confirmApproveBtn');
+        const unitSelect = document.getElementById('approveUnitId');
+        const designationInput = document.getElementById('approveDesignation');
+        const loader = document.getElementById('approveModalLoader');
+
+        // Show loading overlay
+        loader.classList.remove('hidden');
+        loader.classList.add('flex');
+
+        // Disable all controls
+        btn.disabled = true;
+        unitSelect.disabled = true;
+        designationInput.disabled = true;
 
         fetch(approveUrl, {
             method: 'POST',
@@ -143,17 +176,25 @@ function approveApplication() {
         .then(data => {
             if (data.success) {
                 Swal.fire('Approved!', data.message, 'success');
-                closeApproveModal();
                 document.getElementById(`status-${id}`).textContent = 'Approved';
                 document.getElementById(`status-${id}`).className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
-                const btn = document.getElementById(`btn-approve-${id}`);
-                if (btn) btn.remove();
+                const actionBtn = document.getElementById(`btn-approve-${id}`);
+                if (actionBtn) actionBtn.remove();
+                closeApproveModal();
             } else {
-                Swal.fire('Error', data.message, 'error');
+                Swal.fire('Error', data.message || 'Failed to approve', 'error');
             }
         })
         .catch(error => {
             Swal.fire('Error', 'Something went wrong!', 'error');
+        })
+        .finally(() => {
+            // Re-enable controls and hide loader (modal will be closed on success)
+            loader.classList.add('hidden');
+            loader.classList.remove('flex');
+            btn.disabled = false;
+            unitSelect.disabled = false;
+            designationInput.disabled = false;
         });
     };
 

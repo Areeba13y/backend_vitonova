@@ -18,9 +18,12 @@ class DatabaseSeeder extends Seeder
             RolesSeeder::class,
             UnitSeeder::class,
             UserSeeder::class,
-            // EventRegistrationSeeder::class,
-            // ContactMessageSeeder::class,
-            // TeamApplicationSeeder::class,
+            TeamMemberSeeder::class,
+            // CollaborationSeeder::class,
+            FrontendApiTokenSeeder::class,
+            EventRegistrationSeeder::class,
+            ContactMessageSeeder::class,
+            TeamApplicationSeeder::class,
         ]);
     }
 }
