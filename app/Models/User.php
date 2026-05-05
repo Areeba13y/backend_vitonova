@@ -20,12 +20,15 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'role_id',
+        'unit_id',
         'name',
         'email',
         'password',
         'contact',
         'address',
         'designation',
+        'profile_picture',
+        'details',
     ];
 
     /**
@@ -59,5 +62,26 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    /**
+     * Get all contact messages sent by this user.
+     */
+    public function contactMessages()
+    {
+        return $this->hasMany(ContactMessage::class);
+    }
+
+    /**
+     * Get all team applications submitted by this user.
+     */
+    public function teamApplications()
+    {
+        return $this->hasMany(TeamApplication::class);
     }
 }

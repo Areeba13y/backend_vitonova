@@ -19,6 +19,33 @@
                     <input type="hidden" id="methodField" name="_method" value="POST">
                     <input type="hidden" id="userId" name="user_id">
 
+                    <!-- Role Field -->
+                    <div class="mb-4">
+                        <label for="role_id" class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                        <select id="role_id" name="role_id" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select Role</option>
+                            @foreach($roles ?? [] as $role)
+                                @if(in_array($role->code, ['admin', 'team_member']))
+                                    <option value="{{ $role->id }}" data-code="{{ $role->code }}">{{ $role->name }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                        <span id="role_idError" class="text-red-500 text-sm hidden"></span>
+                    </div>
+
+                    <div class="mb-4 hidden" id="unitFieldWrap">
+                        <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-2">Unit</label>
+                        <select id="unit_id" name="unit_id"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="">Select Unit</option>
+                            @foreach($units ?? [] as $unit)
+                                <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                            @endforeach
+                        </select>
+                        <span id="unit_idError" class="text-red-500 text-sm hidden"></span>
+                    </div>
+
                     <!-- Name Field -->
                     <div class="mb-4">
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
@@ -57,6 +84,26 @@
                         <input id="designation" type="text" name="designation"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         <span id="designationError" class="text-red-500 text-sm hidden"></span>
+                    </div>
+
+                    <!-- Profile Picture Field -->
+                    <div class="mb-4">
+                        <label for="profile_picture" class="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
+                        <div class="flex items-center space-x-4">
+                            <img id="profilePreview" src="" alt="Profile Preview" class="w-16 h-16 rounded-full object-cover border border-gray-300 hidden">
+                            <input id="profile_picture" type="file" name="profile_picture" accept="image/*"
+                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                        </div>
+                        <span id="profile_pictureError" class="text-red-500 text-sm hidden"></span>
+                    </div>
+
+                    <!-- Details Field -->
+                    <div class="mb-4">
+                        <label for="details" class="block text-sm font-medium text-gray-700 mb-2">Details / Bio</label>
+                        <textarea id="details" name="details" rows="4"
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                  placeholder="Enter additional information about the user..."></textarea>
+                        <span id="detailsError" class="text-red-500 text-sm hidden"></span>
                     </div>
 
                     <!-- Password Field -->
@@ -134,6 +181,63 @@ document.addEventListener('DOMContentLoaded', function() {
             closeUserModal();
         }
     });
+
+    // Profile picture preview
+    const profilePictureInput = document.getElementById('profile_picture');
+    const profilePreview = document.getElementById('profilePreview');
+    
+    profilePictureInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                profilePreview.src = e.target.result;
+                profilePreview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Role-based password field visibility
+    const roleSelect = document.getElementById('role_id');
+    const passwordField = document.getElementById('passwordField');
+    const confirmPasswordField = document.getElementById('confirmPasswordField');
+    const passwordInput = document.getElementById('password');
+    const passwordConfirmInput = document.getElementById('password_confirmation');
+    const unitFieldWrap = document.getElementById('unitFieldWrap');
+    const unitSelect = document.getElementById('unit_id');
+
+    function updatePasswordVisibility() {
+        const selectedOption = roleSelect.options[roleSelect.selectedIndex];
+        const roleCode = selectedOption.dataset.code || '';
+        const isAdmin = roleCode === 'admin';
+        const isTeamMember = roleCode === 'team_member';
+
+        if (isAdmin) {
+            passwordField.classList.remove('hidden');
+            confirmPasswordField.classList.remove('hidden');
+            passwordInput.required = true;
+            passwordConfirmInput.required = true;
+        } else {
+            passwordField.classList.add('hidden');
+            confirmPasswordField.classList.add('hidden');
+            passwordInput.required = false;
+            passwordConfirmInput.required = false;
+            passwordInput.value = '';
+            passwordConfirmInput.value = '';
+        }
+
+        if (isTeamMember) {
+            unitFieldWrap.classList.remove('hidden');
+            unitSelect.required = true;
+        } else {
+            unitFieldWrap.classList.add('hidden');
+            unitSelect.required = false;
+            unitSelect.value = '';
+        }
+    }
+
+    roleSelect.addEventListener('change', updatePasswordVisibility);
 
     // Reset form function
     function resetForm() {
@@ -265,6 +369,17 @@ document.addEventListener('DOMContentLoaded', function() {
         submitText.textContent = 'Create User';
         userForm.action = routes.userStore;
         document.getElementById('methodField').value = 'POST';
+        
+        // Set default role to team_member
+        const roleSelect = document.getElementById('role_id');
+        const teamMemberOption = roleSelect.querySelector('option[data-code="team_member"]');
+        if (teamMemberOption) {
+            roleSelect.value = teamMemberOption.value;
+        }
+        
+        // Update password visibility based on default role
+        updatePasswordVisibility();
+        
         userModal.classList.remove('hidden');
     };
 
@@ -289,16 +404,34 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('userId').value = user.id;
         
         // Fill form with user data
+        document.getElementById('role_id').value = user.role_id || '';
         document.getElementById('name').value = user.name || '';
         document.getElementById('email').value = user.email || '';
         document.getElementById('contact').value = user.contact || '';
+        document.getElementById('unit_id').value = user.unit_id || '';
         document.getElementById('address').value = user.address || '';
         document.getElementById('designation').value = user.designation || '';
+        document.getElementById('details').value = user.details || '';
         
-        // Make password optional for edit
-        document.getElementById('password').required = false;
-        document.getElementById('password_confirmation').required = false;
-        document.getElementById('passwordHint').classList.remove('hidden');
+        // Handle profile picture preview
+        const profilePreview = document.getElementById('profilePreview');
+        if (user.profile_picture) {
+            // Use asset() for correct URL
+            profilePreview.src = "{{ asset('storage') }}/" + user.profile_picture;
+            profilePreview.classList.remove('hidden');
+        } else {
+            profilePreview.classList.add('hidden');
+        }
+        
+        // Update password visibility based on role
+        updatePasswordVisibility();
+        
+        // For admin role in edit mode, make password optional
+        if (user.role && user.role.code === 'admin') {
+            document.getElementById('password').required = false;
+            document.getElementById('password_confirmation').required = false;
+            document.getElementById('passwordHint').classList.remove('hidden');
+        }
         
         userModal.classList.remove('hidden');
     };

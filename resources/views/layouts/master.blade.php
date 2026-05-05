@@ -6,8 +6,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 CDN -->
+    <!-- SweetAlert2 CDN (with fallback) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.__loadSwalFallback = function () {
+            if (window.Swal) return;
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/sweetalert2@11/dist/sweetalert2.all.min.js';
+            document.head.appendChild(script);
+        };
+    </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex">
     @include('layouts.sidebar')
@@ -39,29 +47,55 @@
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden hidden"></div>
     
     <script>
-        // Basic SweetAlert2 Toast configuration with green theme
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            background: '#f0fdf4',
-            color: '#166534',
-            iconColor: '#22c55e'
-        });
+        if (!window.Swal) {
+            window.__loadSwalFallback();
+        }
 
-        // Green-themed SweetAlert2 configuration
-        const GreenSwal = Swal.mixin({
-            confirmButtonColor: '#22c55e',
-            cancelButtonColor: '#6b7280',
-            background: '#ffffff',
-            color: '#1f2937'
-        });
+        function setupAlerts() {
+            if (window.Swal && typeof window.Swal.mixin === 'function') {
+                const Toast = window.Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: '#f0fdf4',
+                    color: '#166534',
+                    iconColor: '#22c55e'
+                });
 
-        // Make Swal globally available
-        window.Toast = Toast;
-        window.Swal = GreenSwal;
+                const GreenSwal = window.Swal.mixin({
+                    confirmButtonColor: '#22c55e',
+                    cancelButtonColor: '#6b7280',
+                    background: '#ffffff',
+                    color: '#1f2937'
+                });
+
+                window.Toast = Toast;
+                window.Swal = GreenSwal;
+                return;
+            }
+
+            // Final fallback if CDN is blocked: no crash, native dialogs.
+            window.Toast = {
+                fire: function (opts) {
+                    if (opts && opts.title) {
+                        console.log(opts.title);
+                    }
+                }
+            };
+
+            window.Swal = {
+                fire: function (opts) {
+                    const text = (opts && (opts.text || opts.title)) ? (opts.text || opts.title) : 'Are you sure?';
+                    const isConfirmed = window.confirm(text);
+                    return Promise.resolve({ isConfirmed: isConfirmed });
+                }
+            };
+        }
+
+        setupAlerts();
+        setTimeout(setupAlerts, 500);
 
         // Mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {

@@ -25,6 +25,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submission Deadline</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registrations</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -52,6 +53,11 @@
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $event->title }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $event->submission_deadline?->format('Y-m-d') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $event->event_date?->format('Y-m-d') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <a href="{{ route('event-registrations.event', $event->id) }}" class="text-blue-600 hover:text-blue-900 font-medium">
+                                    {{ $event->registrations_count }}
+                                </a>
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
                                     <button onclick="viewEvent(this)"
@@ -83,7 +89,7 @@
                         </tr>
                     @empty
                         <tr id="empty-events-row">
-                            <td colspan="6" class="px-6 py-10 text-center text-gray-500">No events found.</td>
+                            <td colspan="7" class="px-6 py-10 text-center text-gray-500">No events found.</td>
                         </tr>
                     @endforelse
                 </tbody>

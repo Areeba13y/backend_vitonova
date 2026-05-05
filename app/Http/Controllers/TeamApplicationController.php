@@ -3,10 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\TeamApplication;
+use App\Models\Role;
+use App\Models\Unit;
 use App\Mail\ApplicationSubmittedAdmin;
 use App\Mail\ApplicationReceivedApplicant;
 use App\Mail\ApplicationApprovedApplicant;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -18,8 +22,9 @@ class TeamApplicationController extends Controller
      */
     public function index()
     {
-        $applications = TeamApplication::latest()->paginate(10);
-        return view('registrations.team-index', compact('applications'));
+        $applications = TeamApplication::with('user')->latest()->paginate(10);
+        $units = Unit::orderBy('name')->get(['id', 'name']);
+        return view('registrations.team-index', compact('applications', 'units'));
     }
 
     /**
@@ -31,7 +36,7 @@ class TeamApplicationController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
-                'position' => 'required|string|in:Research Positions,Internships,Study Abroad Guidance,Mentorship Program',
+                'position' => 'required|string',
                 'resume' => 'required|file|mimes:pdf,doc,docx|max:5120', // 5MB limit
             ]);
 
@@ -43,25 +48,69 @@ class TeamApplicationController extends Controller
                 $validated['resume_original_name'] = $file->getClientOriginalName();
             }
 
-            $application = TeamApplication::create([
+            $applicantRoleId = Role::where('code', 'team_applicant')->value('id');
+
+            $user = User::withTrashed()->firstOrCreate(
+                ['email' => $validated['email']],
+                [
+                    'name' => $validated['name'],
+                    'password' => bcrypt(uniqid()),
+                    'role_id' => $applicantRoleId,
+                ]
+            );
+
+            if ($user->trashed()) {
+                $user->restore();
+            }
+
+            $user->update([
                 'name' => $validated['name'],
-                'email' => $validated['email'],
+                'role_id' => $applicantRoleId ?? $user->role_id,
+            ]);
+
+            $alreadyRequested = TeamApplication::where('user_id', $user->id)->exists();
+            if ($alreadyRequested) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already requested.',
+                ], 409);
+            }
+
+            // Create application linked to submitted email user
+            $application = TeamApplication::create([
+                'user_id' => $user->id,
                 'position' => $validated['position'],
                 'resume_path' => $validated['resume_path'],
                 'resume_original_name' => $validated['resume_original_name'] ?? null,
                 'status' => 'pending',
             ]);
 
-            // Send emails
+            $application->load('user');
+
+            // Send admin email (independent)
             try {
-                // To Admin
-                Mail::to('admin@web.com')->send(new ApplicationSubmittedAdmin($application));
-                
-                // To Applicant
-                Mail::to($application->email)->send(new ApplicationReceivedApplicant($application));
+                $adminEmail = User::whereHas('role', function ($query) {
+                    $query->where('code', 'admin');
+                })->value('email');
+
+                if ($adminEmail) {
+                    Mail::to($adminEmail)->send(new ApplicationSubmittedAdmin($application));
+                } else {
+                    Log::warning('No admin user found to receive team application email.');
+                }
             } catch (\Exception $e) {
-                Log::error('Mail sending failed: ' . $e->getMessage());
-                // We still returned success as the application is saved.
+                Log::error('Admin mail sending failed: ' . $e->getMessage());
+            }
+
+            // Send applicant submission confirmation (independent)
+            try {
+                if ($application->user?->email) {
+                    Mail::to($application->user->email)->send(new ApplicationReceivedApplicant($application));
+                } else {
+                    Log::warning('Applicant email missing for team application ID: ' . $application->id);
+                }
+            } catch (\Exception $e) {
+                Log::error('Applicant submission mail sending failed: ' . $e->getMessage());
             }
 
             return response()->json([
@@ -88,15 +137,33 @@ class TeamApplicationController extends Controller
     /**
      * Approve the specific team application.
      */
-    public function approve($id)
+    public function approve(Request $request, $id)
     {
         try {
-            $application = TeamApplication::findOrFail($id);
+            $validated = $request->validate([
+                'unit_id' => 'required|exists:units,id',
+                'designation' => 'required|string|max:255',
+            ]);
+
+            $application = TeamApplication::with('user')->findOrFail($id);
             $application->update(['status' => 'approved']);
+
+            $teamMemberRoleId = Role::where('code', 'team_member')->value('id');
+            if ($teamMemberRoleId && $application->user) {
+                $application->user->update([
+                    'role_id' => $teamMemberRoleId,
+                    'unit_id' => $validated['unit_id'],
+                    'designation' => $validated['designation'],
+                ]);
+            }
 
             // Send approval email
             try {
-                Mail::to($application->email)->send(new ApplicationApprovedApplicant($application));
+                if ($application->user?->email) {
+                    Mail::to($application->user->email)->send(new ApplicationApprovedApplicant($application));
+                } else {
+                    Log::warning('Applicant email missing for approved application ID: ' . $application->id);
+                }
             } catch (\Exception $e) {
                 Log::error('Approval mail sending failed: ' . $e->getMessage());
             }

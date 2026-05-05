@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
+use App\Models\Unit;
 use App\Models\User;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -26,7 +28,7 @@ class UserController extends Controller
         }
 
         $users = User::query()
-            ->with('role')
+            ->with(['role', 'unit'])
             ->when($selectedRoleId, function ($query) use ($selectedRoleId) {
                 $query->where('role_id', $selectedRoleId);
             })
@@ -40,9 +42,13 @@ class UserController extends Controller
             ->withQueryString();
 
         if ($request->expectsJson()) {
+            $rowsHtml = '';
+            foreach ($users as $index => $user) {
+                $rowsHtml .= view('users.partials.table-row', ['user' => $user, 'index' => $index])->render();
+            }
             return response()->json([
                 'success' => true,
-                'rows_html' => view('users.partials.table-rows', compact('users'))->render(),
+                'rows_html' => $rowsHtml,
                 'pagination_html' => $users->hasPages() ? $users->links()->render() : '',
                 'is_empty' => $users->isEmpty(),
                 'show_event_filter' => (bool) $showEventFilter,
@@ -55,8 +61,9 @@ class UserController extends Controller
         }
 
         $roles = Role::query()->orderBy('name')->get(['id', 'name', 'code']);
+        $units = Unit::query()->orderBy('name')->get(['id', 'name']);
 
-        return view('users.index', compact('users', 'roles', 'selectedRoleId', 'selectedEventId', 'showEventFilter', 'eventsForFilter'));
+        return view('users.index', compact('users', 'roles', 'units', 'selectedRoleId', 'selectedEventId', 'showEventFilter', 'eventsForFilter'));
     }
 
     public function create()
@@ -67,22 +74,46 @@ class UserController extends Controller
     public function store(Request $request)
     {
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8|confirmed',
+            $role = Role::find($request->role_id);
+            $isAdmin = $role && $role->code === 'admin';
+            $rules = [
+                'role_id' => 'nullable|exists:roles,id',
+                'unit_id' => 'nullable|exists:units,id',
+                'name' => 'nullable|string|max:255',
+                'email' => 'nullable|string|email|max:255|unique:users',
                 'contact' => 'nullable|string|max:255',
                 'address' => 'nullable|string',
                 'designation' => 'nullable|string|max:255',
-            ]);
+                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'details' => 'nullable|string',
+            ];
+            if ($isAdmin) {
+                $rules['password'] = 'required|string|min:8|confirmed';
+            } else {
+                $rules['password'] = 'nullable|string|min:8|confirmed';
+            }
+
+            if ($role && $role->code === 'team_member') {
+                $rules['unit_id'] = 'required|exists:units,id';
+            }
+            $request->validate($rules);
+
+            $profilePicturePath = null;
+            if ($request->hasFile('profile_picture')) {
+                $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+            }
 
             $user = User::create([
+                'role_id' => $request->role_id,
+                'unit_id' => $request->unit_id,
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => $request->password ? Hash::make($request->password) : null,
                 'contact' => $request->contact,
                 'address' => $request->address,
                 'designation' => $request->designation,
+                'profile_picture' => $profilePicturePath,
+                'details' => $request->details,
             ]);
 
             return response()->json([
@@ -126,25 +157,53 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
             
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-                'password' => 'nullable|string|min:8|confirmed',
+
+            $role = Role::find($request->role_id);
+            $isAdmin = $role && $role->code === 'admin';
+            $rules = [
+                'role_id' => 'nullable|exists:roles,id',
+                'unit_id' => 'nullable|exists:units,id',
+                'name' => 'nullable|string|max:255',
+                'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
                 'contact' => 'nullable|string|max:255',
                 'address' => 'nullable|string',
                 'designation' => 'nullable|string|max:255',
-            ]);
+                'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'details' => 'nullable|string',
+            ];
+            if ($isAdmin) {
+                $rules['password'] = 'nullable|string|min:8|confirmed';
+            } else {
+                $rules['password'] = 'nullable|string|min:8|confirmed';
+            }
+
+            if ($role && $role->code === 'team_member') {
+                $rules['unit_id'] = 'required|exists:units,id';
+            }
+            $request->validate($rules);
 
             $updateData = [
+                'role_id' => $request->role_id,
+                'unit_id' => $request->unit_id,
                 'name' => $request->name,
                 'email' => $request->email,
                 'contact' => $request->contact,
                 'address' => $request->address,
                 'designation' => $request->designation,
+                'details' => $request->details,
             ];
 
             if ($request->password) {
                 $updateData['password'] = Hash::make($request->password);
+            }
+
+            // Handle profile picture upload
+            if ($request->hasFile('profile_picture')) {
+                // Delete old profile picture if exists
+                if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                    Storage::disk('public')->delete($user->profile_picture);
+                }
+                $updateData['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
             }
 
             $user->update($updateData);
@@ -210,5 +269,56 @@ class UserController extends Controller
                 'message' => 'An error occurred while deleting the user: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * API: Get all users, filter by role (default: team_member)
+     */
+    public function apiGetUsers(Request $request)
+    {
+        $roleCode = $request->query('role', 'team_member');
+        $role = Role::where('code', $roleCode)->first();
+        if (!$role) {
+            return response()->json(['success' => false, 'message' => 'Role not found.'], 404);
+        }
+        $users = User::with('unit')
+            ->where('role_id', $role->id)
+            ->get();
+
+        $groupedUsers = $users
+            ->groupBy(function ($user) {
+                return $user->unit?->name ?? 'Unassigned';
+            })
+            ->map(function ($unitUsers, $unitName) {
+                return [
+                    'unit_name' => $unitName,
+                    'count' => $unitUsers->count(),
+                    'users' => $unitUsers->values()->map(function ($user) {
+                        return [
+                            'id' => $user->id,
+                            'role_id' => $user->role_id,
+                            'unit_id' => $user->unit_id,
+                            'name' => $user->name,
+                            'email' => $user->email,
+                            'email_verified_at' => $user->email_verified_at,
+                            'contact' => $user->contact,
+                            'address' => $user->address,
+                            'designation' => $user->designation,
+                            'profile_picture' => $user->profile_picture,
+                            'details' => $user->details,
+                            'created_at' => $user->created_at,
+                            'updated_at' => $user->updated_at,
+                            'deleted_at' => $user->deleted_at,
+                        ];
+                    }),
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'role' => $roleCode,
+            'groups' => $groupedUsers,
+        ]);
     }
 }

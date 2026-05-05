@@ -29,6 +29,13 @@
                 <span class="font-medium">User Management</span>
             </a>
 
+            <a href="{{ route('units.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('units.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
+                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4 4h16v4H4V4zm0 6h7v10H4V10zm9 0h7v10h-7V10z"/>
+                </svg>
+                <span class="font-medium">Units</span>
+            </a>
+
             <!-- Event Management -->
             <a href="{{ route('events.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('events.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
                 <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">

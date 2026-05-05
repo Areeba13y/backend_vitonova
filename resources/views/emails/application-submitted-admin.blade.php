@@ -14,8 +14,8 @@
         <h1>New Team Application</h1>
         <p>A new person has requested to join the team.</p>
         <div class="details">
-            <p><strong>Full Name:</strong> {{ $application->name }}</p>
-            <p><strong>Email:</strong> {{ $application->email }}</p>
+            <p><strong>Full Name:</strong> {{ $application->user?->name ?? 'N/A' }}</p>
+            <p><strong>Email:</strong> {{ $application->user?->email ?? 'N/A' }}</p>
             <p><strong>Position:</strong> {{ $application->position }}</p>
         </div>
         <p>Please log in to the admin panel to review the application and download the resume.</p>

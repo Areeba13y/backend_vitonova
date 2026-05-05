@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EventRegistrationReceivedApplicant;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\UserEvent;
@@ -9,6 +10,9 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class EventController extends Controller
@@ -32,7 +36,7 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::latest()->paginate(10);
+        $events = Event::withCount('registrations')->latest()->paginate(10);
 
         return view('events.index', compact('events'));
     }
@@ -73,41 +77,30 @@ class EventController extends Controller
 
     public function register(Request $request, Event $event)
     {
-        $interestOptions = [
-            'Scholarship Aspirant',
-            'Lead Ambassador',
-            'Member Research Team',
-        ];
-
-        $softSkillOptions = [
-            'Graphic Designing',
-            'Video Editor',
-            'Social Media Handling',
-            'Web development',
-            'Scientific Writing',
-            'N/A',
-        ];
-
-        $interpersonalSkillOptions = [
-            'Leadership skills',
-            'Communication skills',
-            'Event Management',
-        ];
-
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email|max:255',
             'name' => 'required|string|max:255',
             'contact' => 'required|string|max:50',
             'university_name' => 'required|string|max:255',
             'semester_degree' => 'required|string|max:255',
             'country' => 'required|string|max:120',
-            'interests' => 'required|in:' . implode(',', $interestOptions),
+            'interests' => 'required',
             'soft_skills' => 'required|array|min:1',
-            'soft_skills.*' => 'required|string|in:' . implode(',', $softSkillOptions),
+            'soft_skills.*' => 'required|string',
             'interpersonal_skills' => 'required|array|min:1',
-            'interpersonal_skills.*' => 'required|string|in:' . implode(',', $interpersonalSkillOptions),
+            'interpersonal_skills.*' => 'required|string',
             'reason_to_join' => 'required|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $validated = $validator->validated();
 
         $user = User::withTrashed()->where('email', $validated['email'])->first();
 
@@ -147,6 +140,14 @@ class EventController extends Controller
             'interpersonal_skills' => array_values($validated['interpersonal_skills']),
             'reason_to_join' => $validated['reason_to_join'],
         ]);
+
+        try {
+            Mail::to($user->email)->send(
+                new EventRegistrationReceivedApplicant($registration, $event, $user)
+            );
+        } catch (\Exception $e) {
+            Log::error('Event registration mail sending failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

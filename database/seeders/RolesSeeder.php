@@ -14,6 +14,7 @@ class RolesSeeder extends Seeder
     public function run(): void
     {
         $roleCodes = [
+            'admin',
             'contact_inquiry',
             'team_applicant',
             'event_registrant',

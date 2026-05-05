@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('team_applications', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email');
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('position');
             $table->string('resume_path');
-            $table->string('status')->default('pending'); // pending, approved, rejected
+            $table->string('resume_original_name')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();
             $table->softDeletes();
         });

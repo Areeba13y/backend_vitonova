@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TeamApplicationController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,6 +43,7 @@ Route::middleware('auth')->group(function () {
     // User CRUD routes
     Route::resource('users', UserController::class);
     Route::resource('events', EventController::class);
+    Route::resource('units', UnitController::class)->except(['show', 'create', 'edit']);
 
     Route::prefix('event-registrations')->name('event-registrations.')->group(function () {
         Route::get('/', [EventRegistrationController::class, 'index'])->name('index');
@@ -63,6 +65,6 @@ Route::post('/contact', [ContactMessageController::class, 'store'])->name('conta
 
 Route::middleware('auth')->group(function () {
     Route::get('/admin/contacts', [ContactMessageController::class, 'index'])->name('admin.contacts.index');
-    Route::patch('/admin/contacts/{message}/read', [ContactMessageController::class, 'markRead'])->name('admin.contacts.markRead');
-    Route::delete('/admin/contacts/{message}', [ContactMessageController::class, 'destroy'])->name('admin.contacts.destroy');
+    Route::patch('/admin/contacts/user/{user}/read', [ContactMessageController::class, 'markRead'])->name('admin.contacts.markRead');
+    Route::delete('/admin/contacts/user/{user}', [ContactMessageController::class, 'destroy'])->name('admin.contacts.destroy');
 });

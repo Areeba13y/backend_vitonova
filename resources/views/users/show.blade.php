@@ -4,7 +4,7 @@
 @section('page_title', 'User Details')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="w-full">
     <!-- Back Button -->
     <div class="mb-6">
         <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-200">
@@ -16,26 +16,19 @@
     </div>
 
     <!-- User Details Card -->
-    <div class="bg-white rounded-lg shadow-md">
-        <div class="flex justify-between items-center p-6 border-b border-gray-200">
-            <h4 class="text-xl font-semibold text-gray-800">User Information</h4>
-            <div class="flex space-x-2">
-                <button onclick="editUser(this)" 
-                        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center"
-                        data-user="{{ $user->toJson(JSON_HEX_APOS | JSON_HEX_QUOT) }}">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    Edit User
-                </button>
-                <button onclick="deleteUser({{ $user->id }}, {{ json_encode($user->name) }})" 
-                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                    Delete User
-                </button>
+    <div class="bg-white rounded-lg shadow-md w-full">
+        <!-- Profile Picture Section -->
+        <div class="flex flex-col p-4">
+            <div class="relative">
+                @if($user->profile_picture)
+                    <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-32 h-32 rounded-full object-cover border-4 border-green-400 shadow cursor-pointer profile-pic-clickable transition-transform duration-200 hover:scale-105">
+                @else
+                    <div class="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-5xl font-bold text-gray-600 border-4 border-gray-200 shadow">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                    </div>
+                @endif
             </div>
+           
         </div>
 
         <div class="p-6">
@@ -88,26 +81,7 @@
                         </div>
                         @endif
 
-                        <div class="flex flex-col">
-                            <label class="text-sm font-medium text-gray-500 uppercase tracking-wide">Email Verified</label>
-                            <span class="text-gray-900 font-medium">
-                                @if($user->email_verified_at)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Verified
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Not Verified
-                                    </span>
-                                @endif
-                            </span>
-                        </div>
+                        
 
                         <div class="flex flex-col">
                             <label class="text-sm font-medium text-gray-500 uppercase tracking-wide">Account Status</label>
@@ -146,7 +120,46 @@
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Profile Picture Modal -->
+    <div id="profilePicModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+        <div class="relative">
+            <img id="profilePicModalImg" src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}" alt="Profile Picture" class="max-w-xs md:max-w-lg rounded-2xl shadow-2xl transform scale-75 opacity-0 transition-all duration-300">
+            <button onclick="closeProfilePicModal()" class="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-1 shadow">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+    // Profile Picture Modal Logic
+    function openProfilePicModal() {
+        const modal = document.getElementById('profilePicModal');
+        const img = document.getElementById('profilePicModalImg');
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            img.classList.remove('scale-75', 'opacity-0');
+            img.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+    function closeProfilePicModal() {
+        const modal = document.getElementById('profilePicModal');
+        const img = document.getElementById('profilePicModalImg');
+        img.classList.remove('scale-100', 'opacity-100');
+        img.classList.add('scale-75', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const profilePic = document.querySelector('.profile-pic-clickable');
+        if (profilePic) {
+            profilePic.addEventListener('click', openProfilePicModal);
+        }
+    });
+    </script>
 
 @include('components.user-modal')
 @endsection
