@@ -17,92 +17,149 @@
 
 <div class="bg-white rounded-lg shadow-sm">
     <div class="p-6">
-        <form id="collaborationForm" method="POST" enctype="multipart/form-data" class="space-y-4 max-w-2xl">
+        <form id="collaborationForm" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Logo *</label>
-                    <input id="logo" type="file" name="logo" accept="image/*" required
-                           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                    <div id="logoPreview" class="mt-2 hidden">
-                        <img id="previewLogo" src="" alt="Preview" class="w-20 h-20 object-contain rounded-lg border">
-                    </div>
-                    <span class="text-red-500 text-xs hidden" id="logo_error"></span>
-                </div>
-
-                <div>
+            <div class="flex items-end gap-4">
+                <div class="flex-1">
                     <label for="organization_name" class="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
                     <input id="organization_name" type="text" name="organization_name" required
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                            placeholder="Organization name">
                     <span class="text-red-500 text-xs hidden" id="organization_name_error"></span>
                 </div>
-            </div>
 
-            <div>
-                <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
-                <input id="subtitle" type="text" name="subtitle"
-                       class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                       placeholder="Organization subtitle">
-            </div>
-
-            <div>
-                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
-                <textarea id="description" name="description" rows="3" required
-                          class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
-                          placeholder="Partnership description"></textarea>
-                <span class="text-red-500 text-xs hidden" id="description_error"></span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="representative_designation" class="block text-sm font-medium text-gray-700 mb-1">Representative Designation</label>
-                    <input id="representative_designation" type="text" name="representative_designation"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                           placeholder="e.g. Minister of Foreign Affairs">
+                <div class="w-64">
+                    <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Logo *</label>
+                    <input id="logo" type="file" name="logo" accept="image/*" required
+                           class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                    <span class="text-red-500 text-xs hidden" id="logo_error"></span>
                 </div>
 
-                <div>
-                    <label for="representative_name" class="block text-sm font-medium text-gray-700 mb-1">Representative Name</label>
-                    <input id="representative_name" type="text" name="representative_name"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                           placeholder="e.g. Dr. John Smith">
+                <div class="flex gap-3">
+                    <a href="{{ route('collaborations.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                        Cancel
+                    </a>
+                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                        <span id="submitText"><i class="fas fa-save mr-2"></i>Save</span>
+                        <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
+                    </button>
                 </div>
             </div>
 
-            <div>
-                <label class="inline-flex items-center gap-2">
-                    <input type="checkbox" name="is_active" value="1" checked
-                           class="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500">
-                    <span class="text-sm text-gray-700">Active (show on website)</span>
-                </label>
-            </div>
+            <div class="flex gap-6">
+                <div class="flex-1 space-y-4">
+                    <div>
+                        <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+                        <input id="subtitle" type="text" name="subtitle"
+                               class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                               placeholder="Organization subtitle">
+                    </div>
 
-            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
-                <a href="{{ route('collaborations.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-                    Cancel
-                </a>
-                <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-medium">
-                    <span id="submitText"><i class="fas fa-save mr-2"></i>Save Collaboration</span>
-                    <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
-                </button>
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                        <textarea id="description" name="description" rows="3" required
+                                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+                                  placeholder="Partnership description"></textarea>
+                        <span class="text-red-500 text-xs hidden" id="description_error"></span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="representative_designation" class="block text-sm font-medium text-gray-700 mb-1">Representative Designation</label>
+                            <input id="representative_designation" type="text" name="representative_designation"
+                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   placeholder="e.g. Minister of Foreign Affairs">
+                        </div>
+
+                        <div>
+                            <label for="representative_name" class="block text-sm font-medium text-gray-700 mb-1">Representative Name</label>
+                            <input id="representative_name" type="text" name="representative_name"
+                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   placeholder="e.g. Dr. John Smith">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="inline-flex items-center gap-2">
+                            <input type="checkbox" name="is_active" value="1" checked
+                                   class="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500">
+                            <span class="text-sm text-gray-700">Active (show on website)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="logoPreviewContainer" class="hidden w-64">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Logo Preview</label>
+                    <div id="logoPreview" class="relative cursor-pointer group rounded-lg overflow-hidden border-2 border-gray-200 hover:border-green-400 transition-all">
+                        <img id="previewLogo" src="" alt="Preview" class="w-full h-48 object-contain bg-gray-50">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 flex items-center justify-center transition-all">
+                            <i class="fas fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity text-xl"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
+<!-- Image Lightbox Modal -->
+<div id="imageLightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden items-center justify-center p-4" style="opacity: 0; transition: opacity 0.3s ease;">
+    <button id="closeLightbox" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10">
+        <i class="fas fa-times text-2xl"></i>
+    </button>
+    <div class="flex items-center justify-center w-full h-full">
+        <div class="relative max-w-4xl w-full flex items-center justify-center">
+            <img id="lightboxImage" src="" alt="Preview" class="max-h-[80vh] w-auto rounded-lg shadow-2xl transform scale-95 opacity-0 transition-all duration-500" style="transform: scale(0.9);">
+        </div>
+    </div>
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-4 py-2 rounded-lg">
+        Click anywhere to close
+    </div>
+</div>
+
 <script>
 $(document).ready(function() {
+    let currentImageSrc = '';
+    
     $('#logo').change(function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                $('#previewLogo').attr('src', e.target.result);
-                $('#logoPreview').removeClass('hidden');
+                currentImageSrc = e.target.result;
+                $('#previewLogo').attr('src', currentImageSrc);
+                $('#logoPreviewContainer').removeClass('hidden');
             };
             reader.readAsDataURL(file);
+        }
+    });
+
+    $('#logoPreview').click(function() {
+        if (currentImageSrc) {
+            $('#lightboxImage').attr('src', currentImageSrc);
+            $('#imageLightbox').removeClass('hidden').css('opacity', '1');
+            setTimeout(function() {
+                $('#lightboxImage').css('transform', 'scale(1)').css('opacity', '1');
+            }, 50);
+        }
+    });
+
+    $('#closeLightbox, #imageLightbox').click(function(e) {
+        if (e.target.id === 'closeLightbox' || e.target.id === 'imageLightbox') {
+            $('#lightboxImage').css('transform', 'scale(0.9)').css('opacity', '0');
+            setTimeout(function() {
+                $('#imageLightbox').css('opacity', '0').addClass('hidden');
+            }, 300);
+        }
+    });
+
+    $(document).keydown(function(e) {
+        if (e.key === 'Escape' && !$('#imageLightbox').hasClass('hidden')) {
+            $('#lightboxImage').css('transform', 'scale(0.9)').css('opacity', '0');
+            setTimeout(function() {
+                $('#imageLightbox').css('opacity', '0').addClass('hidden');
+            }, 300);
         }
     });
 

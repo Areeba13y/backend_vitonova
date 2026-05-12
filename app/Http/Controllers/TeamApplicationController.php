@@ -63,11 +63,11 @@ class TeamApplicationController extends Controller
                     </label>
                     <div class="actions-dropdown">
                         <a href="' . route('team-applications.download', $app->id) . '">
-                            <i class="fas fa-download text-blue-500"></i> Download Resume
+                            <i class="fas fa-download text-blue-500"></i><span>Download Resume</span>
                         </a>
-                        ' . ($app->status === 'pending' ? '<button onclick="openApproveModal(' . $app->id . ')"><i class="fas fa-check text-green-500"></i> Approve</button>' : '') . '
+                        ' . ($app->status === 'pending' ? '<button onclick="openApproveModal(' . $app->id . ')"><i class="fas fa-check text-green-500"></i><span>Approve</span></button>' : '') . '
                         <button onclick="deleteApplication(' . $app->id . ')">
-                            <i class="fas fa-trash text-red-500"></i> Delete
+                            <i class="fas fa-trash text-red-500"></i><span>Delete</span>
                         </button>
                     </div>
                 </div>';

@@ -10,7 +10,7 @@
         <p class="text-sm text-gray-500 mt-1">View user information</p>
     </div>
     <div class="flex items-center space-x-2">
-        <a href="{{ route('users.edit', $user) }}" class="inline-flex items-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm transition-colors">
+        <a href="{{ route('users.edit', $user) }}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors">
             <i class="fas fa-edit mr-2"></i>
             Edit
         </a>
@@ -27,7 +27,7 @@
             @if($user->profile_picture)
                 <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-xl object-cover">
             @else
-                <div class="w-24 h-24 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl font-bold">
+                <div class="w-24 h-24 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-3xl font-bold">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
             @endif
@@ -35,7 +35,7 @@
                 <h3 class="text-xl font-semibold text-gray-800">{{ $user->name }}</h3>
                 <p class="text-gray-500">{{ $user->designation ?? 'No designation' }}</p>
                 <div class="mt-2">
-                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-medium rounded-full">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
                         {{ $user->unit?->name ?? 'No unit' }}
                     </span>
                 </div>

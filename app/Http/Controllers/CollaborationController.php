@@ -56,10 +56,10 @@ class CollaborationController extends Controller
                     </label>
                     <div class="actions-dropdown">
                         <a href="' . route('collaborations.edit', $item) . '">
-                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                            <i class="fas fa-edit text-yellow-500"></i><span>Edit</span>
                         </a>
                         <button onclick="deleteCollaboration(' . $item->id . ', \'' . addslashes($item->organization_name) . '\')">
-                            <i class="fas fa-trash text-red-500"></i> Delete
+                            <i class="fas fa-trash text-red-500"></i><span>Delete</span>
                         </button>
                     </div>
                 </div>';

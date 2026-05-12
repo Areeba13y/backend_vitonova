@@ -18,7 +18,7 @@
         <!-- Logo/Brand -->
         <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
             <div class="flex items-center">
-                <div class="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center mr-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center mr-3">
                     <i class="fas fa-shield-alt text-white text-lg"></i>
                 </div>
                 <div>
@@ -87,11 +87,11 @@
         
         <!-- User Profile & Logout -->
         <div class="border-t border-gray-100 p-4">
-            <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors mb-2 {{ request()->routeIs('profile') ? 'bg-indigo-50' : '' }}">
+            <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors mb-2 {{ request()->routeIs('profile') ? 'bg-green-50' : '' }}">
                 @if(auth()->user()->profile_picture)
                 <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover mr-3">
                 @else
-                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold mr-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center text-white font-semibold mr-3">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                 </div>
                 @endif
@@ -103,7 +103,7 @@
             </a>
             
             <!-- Profile Button -->
-            <a href="{{ route('profile') }}" class="w-full flex items-center justify-center px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg transition-colors text-sm font-medium mb-2">
+            <a href="{{ route('profile') }}" class="w-full flex items-center justify-center px-4 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors text-sm font-medium mb-2">
                 <i class="fas fa-user mr-2"></i>
                 My Profile
             </a>

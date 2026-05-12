@@ -16,12 +16,16 @@ class UnitController extends Controller
     
     public function getUnitsData(Request $request)
     {
-        $units = Unit::withCount('users')->select('units.*');
+        $units = Unit::withCount('users');
 
         return DataTables::of($units)
             ->addIndexColumn()
             ->addColumn('members_count', function ($unit) {
-                return '<span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">' . $unit->users_count . ' members</span>';
+                $count = $unit->users_count ?? 0;
+                if ($count > 0) {
+                    return '<span onclick="openUnitMembersModal(' . $unit->id . ', \'' . addslashes($unit->name) . '\', ' . $count . ')" class="cursor-pointer px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium hover:bg-indigo-200 transition-colors">' . $count . ' member' . ($count != 1 ? 's' : '') . '</span>';
+                }
+                return '<span class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-medium">' . $count . ' member' . ($count != 1 ? 's' : '') . '</span>';
             })
             ->addColumn('actions', function ($unit) {
                 return '<div class="actions-menu">
@@ -34,10 +38,10 @@ class UnitController extends Controller
                     </label>
                     <div class="actions-dropdown">
                         <a href="' . route('units.edit', $unit) . '">
-                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                            <i class="fas fa-edit text-yellow-500"></i><span>Edit</span>
                         </a>
                         <button onclick="deleteUnit(' . $unit->id . ')">
-                            <i class="fas fa-trash text-red-500"></i> Delete
+                            <i class="fas fa-trash text-red-500"></i><span>Delete</span>
                         </button>
                     </div>
                 </div>';

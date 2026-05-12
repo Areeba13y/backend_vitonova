@@ -19,23 +19,32 @@
                 <form id="profileForm" enctype="multipart/form-data" class="space-y-4">
                     <div class="flex items-center space-x-6 mb-6">
                         <div class="shrink-0">
-                            @if($user->profile_picture)
-                            <img id="currentAvatar" src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-full object-cover border-4 border-gray-200">
-                            @else
-                            <div id="currentAvatar" class="w-24 h-24 rounded-full bg-indigo-500 flex items-center justify-center text-white text-3xl font-bold border-4 border-gray-200">
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            <div id="avatarContainer" class="relative cursor-pointer group">
+                                @if($user->profile_picture)
+                                <div class="w-24 h-24 rounded-full bg-gray-100 border-4 border-gray-200 overflow-hidden transition-all duration-300 group-hover:border-green-400 group-hover:shadow-lg">
+                                    <img id="currentImage" src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                    <img id="previewImage" src="" alt="Preview" class="w-full h-full object-cover hidden">
+                                </div>
+                                @else
+                                <div class="w-24 h-24 rounded-full bg-gradient-to-r from-green-400 to-green-500 border-4 border-gray-200 flex items-center justify-center text-white text-3xl font-bold transition-all duration-300 group-hover:border-green-400 group-hover:shadow-lg">
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                </div>
+                                @endif
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-black group-hover:bg-opacity-30 rounded-full flex items-center justify-center transition-all duration-300">
+                                    <i class="fas fa-search text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-lg"></i>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-white">
+                                    <i class="fas fa-camera text-white text-xs"></i>
+                                </div>
                             </div>
-                            @endif
-                        </div>
-                        <div id="newAvatarPreview" class="shrink-0 hidden">
-                            <img id="previewAvatar" src="" alt="Preview" class="w-24 h-24 rounded-full object-cover border-4 border-indigo-200">
-                        </div>
-                        <div>
-                            <label for="profile_picture" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg cursor-pointer text-sm font-medium transition-colors">
-                                <i class="fas fa-camera mr-2"></i>Change Photo
+                            <label for="profile_picture" class="block mt-2">
+                                <span class="text-xs text-green-600 hover:text-green-700 cursor-pointer font-medium">Change Photo</span>
                             </label>
                             <input id="profile_picture" type="file" name="profile_picture" accept="image/*" class="hidden">
                             <p class="text-xs text-gray-500 mt-2">JPG, PNG or GIF. Max 2MB.</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-green-600">Click image to preview</p>
                         </div>
                     </div>
 
@@ -43,7 +52,7 @@
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
                             <input id="name" type="text" name="name" value="{{ $user->name }}" required
-                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="Your full name">
                             <span class="text-red-500 text-xs hidden" id="name_error"></span>
                         </div>
@@ -51,7 +60,7 @@
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
                             <input id="email" type="email" name="email" value="{{ $user->email }}" required
-                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="your@email.com">
                             <span class="text-red-500 text-xs hidden" id="email_error"></span>
                         </div>
@@ -61,14 +70,14 @@
                         <div>
                             <label for="contact" class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
                             <input id="contact" type="text" name="contact" value="{{ $user->contact }}"
-                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="+1 234 567 890">
                         </div>
 
                         <div>
                             <label for="designation" class="block text-sm font-medium text-gray-700 mb-1">Designation</label>
                             <input id="designation" type="text" name="designation" value="{{ $user->designation }}"
-                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="Your job title">
                         </div>
                     </div>
@@ -76,12 +85,12 @@
                     <div>
                         <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
                         <textarea id="address" name="address" rows="2"
-                                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
                                   placeholder="Your address">{{ $user->address }}</textarea>
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100">
-                        <button type="submit" id="profileSubmitBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-medium">
+                        <button type="submit" id="profileSubmitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                             <span id="profileSubmitText"><i class="fas fa-save mr-2"></i>Save Changes</span>
                             <span id="profileSubmitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
                         </button>
@@ -102,7 +111,7 @@
                         <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password *</label>
                         <div class="relative">
                             <input id="current_password" type="password" name="current_password" required
-                                   class="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="Enter current password">
                             <button type="button" onclick="togglePasswordVisibility('current_password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-eye"></i>
@@ -115,7 +124,7 @@
                         <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password *</label>
                         <div class="relative">
                             <input id="new_password" type="password" name="new_password" required
-                                   class="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="Enter new password">
                             <button type="button" onclick="togglePasswordVisibility('new_password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-eye"></i>
@@ -128,7 +137,7 @@
                         <label for="new_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password *</label>
                         <div class="relative">
                             <input id="new_password_confirmation" type="password" name="new_password_confirmation" required
-                                   class="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                   class="w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                    placeholder="Confirm new password">
                             <button type="button" onclick="togglePasswordVisibility('new_password_confirmation', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-eye"></i>
@@ -138,7 +147,7 @@
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100">
-                        <button type="submit" id="passwordSubmitBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-medium">
+                        <button type="submit" id="passwordSubmitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                             <span id="passwordSubmitText"><i class="fas fa-key mr-2"></i>Update Password</span>
                             <span id="passwordSubmitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Updating...</span>
                         </button>
@@ -171,6 +180,21 @@
     </div>
 </div>
 
+<!-- Image Lightbox Modal -->
+<div id="imageLightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden items-center justify-center p-4" style="opacity: 0; transition: opacity 0.3s ease;">
+    <button id="closeLightbox" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10">
+        <i class="fas fa-times text-2xl"></i>
+    </button>
+    <div class="flex items-center justify-center w-full h-full">
+        <div class="relative max-w-4xl w-full flex items-center justify-center">
+            <img id="lightboxImage" src="" alt="Preview" class="max-h-[80vh] w-auto rounded-lg shadow-2xl transform scale-95 opacity-0 transition-all duration-500" style="transform: scale(0.9);">
+        </div>
+    </div>
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black bg-opacity-50 px-4 py-2 rounded-lg">
+        Click anywhere to close
+    </div>
+</div>
+
 <script>
 function togglePasswordVisibility(inputId, btn) {
     const input = document.getElementById(inputId);
@@ -187,16 +211,48 @@ function togglePasswordVisibility(inputId, btn) {
 }
 
 $(document).ready(function() {
+    let currentImageSrc = '{{ $user->profile_picture ? asset("storage/" . $user->profile_picture) : "" }}';
+    
     $('#profile_picture').change(function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                $('#previewAvatar').attr('src', e.target.result);
-                $('#newAvatarPreview').removeClass('hidden');
-                $('#currentAvatar').addClass('hidden');
+                currentImageSrc = e.target.result;
+                if ($('#currentImage').length) {
+                    $('#currentImage').addClass('hidden');
+                }
+                $('#previewImage').attr('src', currentImageSrc).removeClass('hidden');
             };
             reader.readAsDataURL(file);
+        }
+    });
+
+    $('#avatarContainer').click(function() {
+        if (currentImageSrc) {
+            $('#lightboxImage').attr('src', currentImageSrc);
+            $('#imageLightbox').removeClass('hidden').css('opacity', '1');
+            setTimeout(function() {
+                $('#lightboxImage').css('transform', 'scale(1)').css('opacity', '1');
+            }, 50);
+        }
+    });
+
+    $('#closeLightbox, #imageLightbox').click(function(e) {
+        if (e.target.id === 'closeLightbox' || e.target.id === 'imageLightbox') {
+            $('#lightboxImage').css('transform', 'scale(0.9)').css('opacity', '0');
+            setTimeout(function() {
+                $('#imageLightbox').css('opacity', '0').addClass('hidden');
+            }, 300);
+        }
+    });
+
+    $(document).keydown(function(e) {
+        if (e.key === 'Escape' && !$('#imageLightbox').hasClass('hidden')) {
+            $('#lightboxImage').css('transform', 'scale(0.9)').css('opacity', '0');
+            setTimeout(function() {
+                $('#imageLightbox').css('opacity', '0').addClass('hidden');
+            }, 300);
         }
     });
 

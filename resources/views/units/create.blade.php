@@ -17,25 +17,27 @@
 
 <div class="bg-white rounded-lg shadow-sm">
     <div class="p-6">
-        <form id="unitForm" method="POST" class="max-w-md">
+        <form id="unitForm" method="POST" class="w-full">
             @csrf
             
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Unit Name *</label>
-                <input id="name" type="text" name="name" required
-                       class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('name') border-red-500 @enderror"
-                       placeholder="Enter unit name">
-                <span class="text-red-500 text-xs hidden" id="name_error"></span>
-            </div>
+            <div class="flex items-end gap-4">
+                <div class="flex-1">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Unit Name *</label>
+                    <input id="name" type="text" name="name" required
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                           placeholder="Enter unit name">
+                    <span class="text-red-500 text-xs hidden" id="name_error"></span>
+                </div>
 
-            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
-                <a href="{{ route('units.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-                    Cancel
-                </a>
-                <button type="submit" id="submitBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-medium">
-                    <span id="submitText"><i class="fas fa-save mr-2"></i>Save Unit</span>
-                    <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
-                </button>
+                <div class="flex gap-3">
+                    <a href="{{ route('units.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                        Cancel
+                    </a>
+                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                        <span id="submitText"><i class="fas fa-save mr-2"></i>Save Unit</span>
+                        <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
+                    </button>
+                </div>
             </div>
         </form>
     </div>

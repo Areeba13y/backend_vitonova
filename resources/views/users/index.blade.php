@@ -9,7 +9,7 @@
         <h2 class="text-xl font-semibold text-gray-800">All Users</h2>
         <p class="text-sm text-gray-500 mt-1">Manage your team members</p>
     </div>
-    <a href="{{ route('users.create') }}" class="inline-flex items-center px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
+    <a href="{{ route('users.create') }}" class="inline-flex items-center px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
         <i class="fas fa-plus mr-2"></i>
         Add New User
     </a>
@@ -19,7 +19,7 @@
 <div class="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-wrap gap-4 items-center">
     <div class="flex items-center space-x-2">
         <label class="text-sm text-gray-600">Unit:</label>
-        <select id="unitFilter" class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <select id="unitFilter" class="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
             <option value="">All Units</option>
             @foreach(\App\Models\Unit::orderBy('name')->get() as $unit)
                 <option value="{{ $unit->id }}">{{ $unit->name }}</option>
@@ -33,7 +33,7 @@
     <div class="p-6 relative">
         <div id="usersTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
             <div class="flex items-center">
-                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
                 <span class="text-gray-600">Loading data...</span>
             </div>
         </div>
@@ -97,7 +97,7 @@ $(document).ready(function() {
                 { extend: 'csv', className: 'mr-2', text: '<i class="fas fa-file-csv mr-1"></i> CSV' }
             ],
             language: {
-                processing: '<div class="flex items-center justify-center py-8"><i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i> Loading data...</div>',
+                processing: '<div class="flex items-center justify-center py-8"><i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i> Loading data...</div>',
                 search: "",
                 searchPlaceholder: "Search users...",
                 lengthMenu: "Show _MENU_",

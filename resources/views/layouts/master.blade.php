@@ -22,8 +22,8 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#6366f1',
-                        primaryDark: '#4f46e5',
+                        primary: '#22c55e',
+                        primaryDark: '#16a34a',
                     }
                 }
             }
@@ -34,7 +34,7 @@
             background-color: #f3f4f6;
         }
         .sidebar-link.active {
-            background: linear-gradient(to right, #6366f1, #6366f1) !important;
+            background: linear-gradient(to right, #22c55e, #22c55e) !important;
             color: white !important;
         }
         .sidebar-link.active .text-gray-400 {
@@ -65,7 +65,7 @@
             gap: 0.5rem;
         }
         .dt-button {
-            background: #6366f1 !important;
+            background: #22c55e !important;
             color: white !important;
             border: none !important;
             border-radius: 0.375rem !important;
@@ -82,7 +82,7 @@
         }
         .line {
             fill: none;
-            stroke: #6366f1;
+            stroke: #22c55e;
             stroke-linecap: round;
             stroke-linejoin: round;
             stroke-width: 3;
@@ -100,7 +100,7 @@
             stroke-dashoffset: -32.42;
         }
         .dt-button:hover {
-            background: #4f46e5 !important;
+            background: #16a34a !important;
         }
         .dataTables_filter input {
             border: 1px solid #e5e7eb;
@@ -113,12 +113,12 @@
             padding: 0.5rem 0.75rem;
         }
         .paginate_button.current {
-            background: #6366f1 !important;
-            border-color: #6366f1 !important;
+            background: #22c55e !important;
+            border-color: #22c55e !important;
             color: white !important;
         }
         .dt-button {
-            background: #6366f1 !important;
+            background: #22c55e !important;
             color: white !important;
             border: none !important;
             border-radius: 0.375rem !important;
@@ -127,7 +127,7 @@
             margin-right: 0.5rem !important;
         }
         .dt-button:hover {
-            background: #4f46e5 !important;
+            background: #16a34a !important;
         }
         .dt-buttons {
             margin-bottom: 0.5rem;
@@ -221,7 +221,12 @@
             background: #f9fafb;
         }
         .actions-menu .actions-dropdown i {
-            width: 1.5rem;
+            width: 1.75rem;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .actions-menu .actions-dropdown span {
+            margin-left: 0.25rem;
         }
         /* DataTables Pagination - Professional Styling */
         .dataTables_wrapper .dataTables_paginate {
@@ -251,15 +256,15 @@
             color: #374151 !important;
         }
         .dataTables_wrapper .paginate_button.current {
-            background: #6366f1 !important;
-            border-color: #6366f1 !important;
+            background: #22c55e !important;
+            border-color: #22c55e !important;
             color: white !important;
             font-weight: 600 !important;
-            box-shadow: 0 1px 3px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 1px 3px rgba(34, 197, 94, 0.3);
         }
         .dataTables_wrapper .paginate_button.current:hover {
-            background: #4f46e5 !important;
-            border-color: #4f46e5 !important;
+            background: #16a34a !important;
+            border-color: #16a34a !important;
             color: white !important;
         }
         .dataTables_wrapper .paginate_button.disabled {
@@ -335,8 +340,8 @@
         }
         .dataTables_wrapper .dataTables_length select:focus {
             outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+            border-color: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
         }
         .dataTables_wrapper .dataTables_filter {
             margin-bottom: 1rem;
@@ -350,8 +355,8 @@
         }
         .dataTables_wrapper .dataTables_filter input:focus {
             outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+            border-color: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
         }
         /* Prevent horizontal scroll */
         html, body {
@@ -364,6 +369,37 @@
         }
         .rotate-180 {
             transform: rotate(180deg);
+        }
+        /* Green Theme Loader */
+        .loader-green {
+            border-color: #22c55e !important;
+            border-top-color: transparent !important;
+        }
+        /* Green input focus */
+        input:focus, textarea:focus, select:focus {
+            border-color: #22c55e !important;
+            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2) !important;
+        }
+        /* Green file input */
+        .file\:bg-green-50::file-selector-button {
+            background-color: #f0fdf4 !important;
+            color: #166534 !important;
+        }
+        .file\:text-green-700::file-selector-button {
+            color: #166534 !important;
+        }
+        .file\:hover\\:bg-green-100::file-selector-button:hover {
+            background-color: #dcfce7 !important;
+        }
+        /* Green checkbox/radio */
+        input[type="checkbox"]:checked,
+        input[type="radio"]:checked {
+            background-color: #22c55e !important;
+            border-color: #22c55e !important;
+        }
+        /* Profile green accent */
+        .bg-green-accent {
+            background-color: #22c55e !important;
         }
     </style>
     <script>
@@ -384,17 +420,12 @@
                 <h1 class="text-xl font-semibold text-gray-800">@yield('page_title', 'Dashboard')</h1>
             </div>
             <div class="flex items-center space-x-4">
-                <button class="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors relative">
-                    <i class="fas fa-bell text-lg"></i>
-                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-                <div class="h-8 w-px bg-gray-300"></div>
                 <div class="relative">
                     <button id="userDropdownBtn" class="flex items-center space-x-3 cursor-pointer hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors">
                         @if(auth()->user()->profile_picture)
                         <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover">
                         @else
-                        <div class="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold text-sm">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center text-white font-semibold text-sm">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                         </div>
                         @endif
@@ -454,14 +485,14 @@
                 showConfirmButton: false,
                 timer: 3000,
                 timerProgressBar: true,
-                background: '#f8fafc',
-                color: '#1f2937',
-                iconColor: '#6366f1'
+                background: '#f0fdf4',
+                color: '#166534',
+                iconColor: '#22c55e'
             });
 
             window.Toast = Toast;
             window.Swal = Swal.mixin({
-                confirmButtonColor: '#6366f1',
+                confirmButtonColor: '#22c55e',
                 cancelButtonColor: '#6b7280'
             });
 
@@ -569,5 +600,6 @@
             }
         }
     </script>
+    @yield('scripts')
 </body>
 </html>

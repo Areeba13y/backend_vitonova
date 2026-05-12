@@ -157,9 +157,8 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::query()->orderBy('name')->get(['id', 'name', 'code']);
         $units = Unit::query()->orderBy('name')->get(['id', 'name']);
-        return view('users.create', compact('roles', 'units'));
+        return view('users.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -168,8 +167,7 @@ class UserController extends Controller
             $teamMemberRole = Role::where('code', 'team_member')->first();
             
             $rules = [
-                'role_id' => 'nullable|exists:roles,id',
-                'unit_id' => 'nullable|exists:units,id',
+                'unit_id' => 'required|exists:units,id',
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'contact' => 'nullable|string|max:255',
@@ -178,10 +176,6 @@ class UserController extends Controller
                 'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'details' => 'nullable|string',
             ];
-
-            if ($teamMemberRole && (int)$request->role_id === $teamMemberRole->id) {
-                $rules['unit_id'] = 'required|exists:units,id';
-            }
             
             $request->validate($rules);
 
@@ -191,7 +185,7 @@ class UserController extends Controller
             }
 
             $user = User::create([
-                'role_id' => $request->role_id ?? $teamMemberRole?->id,
+                'role_id' => $teamMemberRole?->id,
                 'unit_id' => $request->unit_id,
                 'name' => $request->name,
                 'email' => $request->email,
@@ -399,6 +393,9 @@ class UserController extends Controller
         
         $users = User::with(['unit'])
             ->where('role_id', $teamMemberRole->id)
+            ->when($request->unit_id, function ($query) use ($request) {
+                $query->where('unit_id', $request->unit_id);
+            })
             ->select('users.*');
 
         return DataTables::of($users)
@@ -432,13 +429,13 @@ class UserController extends Controller
                     </label>
                     <div class="actions-dropdown">
                         <a href="' . route('users.show', $user) . '">
-                            <i class="fas fa-eye text-blue-500"></i> View
+                            <i class="fas fa-eye text-blue-500"></i><span>View</span>
                         </a>
                         <a href="' . route('users.edit', $user) . '">
-                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                            <i class="fas fa-edit text-yellow-500"></i><span>Edit</span>
                         </a>
                         <button onclick="deleteUser(' . $user->id . ', \'' . addslashes($user->name) . '\')">
-                            <i class="fas fa-trash text-red-500"></i> Delete
+                            <i class="fas fa-trash text-red-500"></i><span>Delete</span>
                         </button>
                     </div>
                 </div>';

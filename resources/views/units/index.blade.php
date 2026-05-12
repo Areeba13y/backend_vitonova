@@ -4,12 +4,13 @@
 @section('page_title', 'Units')
 
 @section('content')
+<x-unit-members-modal />
 <div class="mb-6 flex items-center justify-between">
     <div>
         <h2 class="text-xl font-semibold text-gray-800">All Units</h2>
         <p class="text-sm text-gray-500 mt-1">Manage your organizational units</p>
     </div>
-    <a href="{{ route('units.create') }}" class="inline-flex items-center px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
+    <a href="{{ route('units.create') }}" class="inline-flex items-center px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
         <i class="fas fa-plus mr-2"></i>
         Add Unit
     </a>
@@ -19,7 +20,7 @@
     <div class="p-6 relative">
         <div id="unitsTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
             <div class="flex items-center">
-                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
                 <span class="text-gray-600">Loading data...</span>
             </div>
         </div>

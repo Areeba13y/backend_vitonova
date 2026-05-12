@@ -42,7 +42,7 @@
                 <div class="pt-4 border-t border-gray-100">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">Representative</h3>
                     <div class="flex items-center">
-                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 mr-4">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-4">
                             <i class="fas fa-user"></i>
                         </div>
                         <div>
@@ -79,7 +79,7 @@
             </div>
             
             <div class="mt-6 flex flex-col space-y-3">
-                <a href="{{ route('collaborations.edit', $collaboration) }}" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm transition-colors">
+                <a href="{{ route('collaborations.edit', $collaboration) }}" class="inline-flex items-center justify-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors">
                     <i class="fas fa-edit mr-2"></i>
                     Edit Collaboration
                 </a>

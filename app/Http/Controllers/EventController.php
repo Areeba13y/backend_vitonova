@@ -70,13 +70,13 @@ class EventController extends Controller
                     </label>
                     <div class="actions-dropdown">
                         <a href="' . route('events.show', $event) . '">
-                            <i class="fas fa-eye text-blue-500"></i> View
+                            <i class="fas fa-eye text-blue-500"></i><span>View</span>
                         </a>
                         <a href="' . route('events.edit', $event) . '">
-                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                            <i class="fas fa-edit text-yellow-500"></i><span>Edit</span>
                         </a>
                         <button onclick="deleteEvent(' . $event->id . ', \'' . addslashes($event->title) . '\')">
-                            <i class="fas fa-trash text-red-500"></i> Delete
+                            <i class="fas fa-trash text-red-500"></i><span>Delete</span>
                         </button>
                     </div>
                 </div>';
@@ -87,14 +87,7 @@ class EventController extends Controller
 
     public function create()
     {
-        if (request()->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Create form data loaded.',
-            ]);
-        }
-
-        return redirect()->route('events.index');
+        return view('events.create');
     }
 
     public function store(Request $request)

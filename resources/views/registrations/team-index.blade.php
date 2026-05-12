@@ -15,7 +15,7 @@
     <div class="p-6 relative">
         <div id="applicationsTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
             <div class="flex items-center">
-                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
                 <span class="text-gray-600">Loading data...</span>
             </div>
         </div>
@@ -49,7 +49,7 @@
                 <input type="hidden" id="approveApplicationId">
                 <div class="mb-4">
                     <label for="approveUnitId" class="block text-sm font-medium text-gray-700 mb-1">Unit *</label>
-                    <select id="approveUnitId" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    <select id="approveUnitId" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
                         <option value="">Select Unit</option>
                         @foreach($units as $unit)
                             <option value="{{ $unit->id }}">{{ $unit->name }}</option>
@@ -58,7 +58,7 @@
                 </div>
                 <div class="mb-6">
                     <label for="approveDesignation" class="block text-sm font-medium text-gray-700 mb-1">Designation *</label>
-                    <input id="approveDesignation" type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter designation" required>
+                    <input id="approveDesignation" type="text" class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Enter designation" required>
                 </div>
                 <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
                     <button type="button" onclick="closeApproveModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium">Cancel</button>

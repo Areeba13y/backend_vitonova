@@ -20,7 +20,7 @@
     <div class="p-6 relative">
         <div id="messagesTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
             <div class="flex items-center">
-                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
                 <span class="text-gray-600">Loading data...</span>
             </div>
         </div>
@@ -54,7 +54,7 @@
         </div>
         <div id="historyContent" class="p-6 overflow-y-auto max-h-[60vh]">
             <div id="historyLoader" class="flex items-center justify-center py-8">
-                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
                 <span class="text-gray-600">Loading messages...</span>
             </div>
         </div>
@@ -115,7 +115,7 @@ function openHistoryModal(userId, userName, userEmail) {
     $('#historyUserInfo').text(userName + ' (' + userEmail + ')');
     $('#historyContent').html(`
         <div class="flex items-center justify-center py-8">
-            <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+            <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
             <span class="text-gray-600">Loading messages...</span>
         </div>
     `);

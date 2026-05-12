@@ -25,7 +25,7 @@
             @endif
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full">{{ $event->category }}</span>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">{{ $event->category }}</span>
                     <span class="text-sm text-gray-500">Created {{ $event->created_at->format('M d, Y') }}</span>
                 </div>
                 
@@ -52,7 +52,7 @@
             <div class="space-y-4">
                 <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div class="flex items-center">
-                        <i class="fas fa-users text-indigo-500 mr-3"></i>
+                        <i class="fas fa-users text-green-500 mr-3"></i>
                         <span class="text-gray-600">Registrations</span>
                     </div>
                     <span class="text-xl font-bold text-gray-800">{{ $event->registrations_count ?? $event->registrations->count() }}</span>
@@ -60,7 +60,7 @@
             </div>
             
             <div class="mt-6 flex flex-col space-y-3">
-                <a href="{{ route('events.edit', $event) }}" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm transition-colors">
+                <a href="{{ route('events.edit', $event) }}" class="inline-flex items-center justify-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors">
                     <i class="fas fa-edit mr-2"></i>
                     Edit Event
                 </a>

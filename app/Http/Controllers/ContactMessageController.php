@@ -105,11 +105,11 @@ class ContactMessageController extends Controller
                     </label>
                     <div class="actions-dropdown">
                         <button onclick="openHistoryModal(' . $userId . ', \'' . addslashes($userName) . '\', \'' . addslashes($userEmail) . '\')">
-                            <i class="fas fa-history text-blue-500"></i> View History
+                            <i class="fas fa-history text-blue-500"></i><span>View History</span>
                         </button>
-                        ' . ($hasUnread ? '<button onclick="markAsRead(' . $userId . ')"><i class="fas fa-check text-green-500"></i> Mark Read</button>' : '') . '
+                        ' . ($hasUnread ? '<button onclick="markAsRead(' . $userId . ')"><i class="fas fa-check text-green-500"></i><span>Mark Read</span></button>' : '') . '
                         <button onclick="deleteMessages(' . $userId . ')">
-                            <i class="fas fa-trash text-red-500"></i> Delete
+                            <i class="fas fa-trash text-red-500"></i><span>Delete</span>
                         </button>
                     </div>
                 </div>';
