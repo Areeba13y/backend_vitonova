@@ -103,17 +103,18 @@
             </a>
             
             <!-- Profile Button -->
-            <a href="{{ route('profile') }}" class="w-full flex items-center justify-center px-4 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors text-sm font-medium mb-2">
+            <a href="{{ route('profile') }}" id="sidebarProfileBtn" class="w-full flex items-center justify-center px-4 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors text-sm font-medium mb-2">
                 <i class="fas fa-user mr-2"></i>
-                My Profile
+                <span>My Profile</span>
             </a>
             
             <!-- Logout Button -->
             <form id="sidebar-logout-form" method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
-                <button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm font-medium">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    Logout
+                <button type="submit" id="sidebarLogoutBtn" class="w-full flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm font-medium">
+                    <i id="sidebarLogoutIcon" class="fas fa-sign-out-alt mr-2"></i>
+                    <span id="sidebarLogoutText">Logout</span>
+                    <i id="sidebarLogoutLoader" class="fas fa-spinner fa-spin hidden ml-2"></i>
                 </button>
             </form>
         </div>
@@ -149,6 +150,10 @@
             logoutForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
+                document.getElementById('sidebarLogoutIcon').classList.add('hidden');
+                document.getElementById('sidebarLogoutText').classList.add('hidden');
+                document.getElementById('sidebarLogoutLoader').classList.remove('hidden');
+                
                 const formData = new FormData(this);
                 
                 fetch(this.action, {
@@ -168,9 +173,37 @@
                         });
                         setTimeout(() => {
                             window.location.href = '{{ url("/login") }}';
-                        }, 1500);
+                        }, 1000);
                     }
                 });
+            });
+        }
+        
+        // Sidebar Profile Button loader
+        const sidebarProfileBtn = document.getElementById('sidebarProfileBtn');
+        if (sidebarProfileBtn) {
+            sidebarProfileBtn.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                const span = this.querySelector('span');
+                icon.classList.add('hidden');
+                span.classList.add('hidden');
+                const loader = document.createElement('i');
+                loader.className = 'fas fa-spinner fa-spin';
+                this.appendChild(loader);
+            });
+        }
+        
+        // Reset loaders on page load (only for profile button)
+        const loaders = sidebarProfileBtn ? sidebarProfileBtn.querySelectorAll('i.fa-spinner') : [];
+        if (loaders.length > 0) {
+            sidebarProfileBtn.querySelectorAll('i').forEach(function(icon) {
+                icon.classList.remove('hidden');
+            });
+            sidebarProfileBtn.querySelectorAll('span').forEach(function(span) {
+                span.classList.remove('hidden');
+            });
+            loaders.forEach(function(loader) {
+                loader.remove();
             });
         }
     });

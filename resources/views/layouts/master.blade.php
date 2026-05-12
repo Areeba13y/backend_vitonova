@@ -438,16 +438,17 @@
                             <p class="text-sm font-medium text-gray-800">{{ auth()->user()->name ?? 'Admin User' }}</p>
                             <p class="text-xs text-gray-500">{{ auth()->user()->email ?? 'admin@example.com' }}</p>
                         </div>
-                        <a href="{{ route('profile') }}" class="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-100 transition-colors">
+                        <a href="{{ route('profile') }}" id="profileLink" class="flex items-center px-4 py-2.5 text-gray-700 hover:bg-gray-100 transition-colors">
                             <i class="fas fa-user w-5 text-gray-400"></i>
                             <span class="ml-3 text-sm font-medium">My Profile</span>
                         </a>
                         <div class="border-t border-gray-100 my-1"></div>
                         <form id="navbar-logout-form" method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="w-full flex items-center px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors">
-                                <i class="fas fa-sign-out-alt w-5"></i>
-                                <span class="ml-3 text-sm font-medium">Logout</span>
+                            <button type="submit" id="logoutBtn" class="w-full flex items-center px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors">
+                                <i id="logoutIcon" class="fas fa-sign-out-alt w-5"></i>
+                                <span id="logoutText" class="ml-3 text-sm font-medium">Logout</span>
+                                <i id="logoutLoader" class="fas fa-spinner fa-spin w-5 hidden"></i>
                             </button>
                         </form>
                     </div>
@@ -559,6 +560,10 @@
             // Navbar logout form
             $('#navbar-logout-form').on('submit', function(e) {
                 e.preventDefault();
+                $('#logoutIcon').addClass('hidden');
+                $('#logoutText').addClass('hidden');
+                $('#logoutLoader').removeClass('hidden');
+                
                 const formData = new FormData(this);
                 fetch(this.action, {
                     method: 'POST',
@@ -577,27 +582,56 @@
                         });
                         setTimeout(() => {
                             window.location.href = '{{ url("/login") }}';
-                        }, 1500);
+                        }, 1000);
                     }
                 });
             });
+            
+            // Navbar profile link loader
+            $('#profileLink').on('click', function(e) {
+                const icon = $(this).find('i').not('#logoutIcon, #logoutLoader');
+                const span = $(this).find('span');
+                icon.addClass('hidden');
+                span.addClass('hidden');
+                $(this).append('<i class="fas fa-spinner fa-spin w-5 text-gray-400"></i>');
+            });
+            
+            // Reset loaders on page load (in case user came back with back button)
+            resetNavLoaders();
+            
+            function toggleActionsMenu(checkbox) {
+                const menuEl = checkbox.closest('.actions-menu');
+                if (checkbox.checked) {
+                    // Close all other menus first
+                    $('.actions-menu').removeClass('active');
+                    $('.actions-dropdown').hide();
+                    $('.actions-menu .hamburger input').prop('checked', false);
+                    // Open this menu
+                    checkbox.checked = true;
+                    menuEl.classList.add('active');
+                    menuEl.querySelector('.actions-dropdown').style.display = 'block';
+                } else {
+                    menuEl.classList.remove('active');
+                    menuEl.querySelector('.actions-dropdown').style.display = 'none';
+                }
+            }
         });
         
-        function toggleActionsMenu(checkbox) {
-            const menuEl = checkbox.closest('.actions-menu');
-            if (checkbox.checked) {
-                // Close all other menus first
-                $('.actions-menu').removeClass('active');
-                $('.actions-dropdown').hide();
-                $('.actions-menu .hamburger input').prop('checked', false);
-                // Open this menu
-                checkbox.checked = true;
-                menuEl.classList.add('active');
-                menuEl.querySelector('.actions-dropdown').style.display = 'block';
-            } else {
-                menuEl.classList.remove('active');
-                menuEl.querySelector('.actions-dropdown').style.display = 'none';
-            }
+        function resetNavLoaders() {
+            document.querySelectorAll('#profileLink').forEach(function(el) {
+                const loaders = el.querySelectorAll('i.fa-spinner');
+                if (loaders.length > 0) {
+                    el.querySelectorAll('i').forEach(function(icon) {
+                        icon.classList.remove('hidden');
+                    });
+                    el.querySelectorAll('span').forEach(function(span) {
+                        span.classList.remove('hidden');
+                    });
+                    loaders.forEach(function(loader) {
+                        loader.remove();
+                    });
+                }
+            });
         }
     </script>
     @yield('scripts')
