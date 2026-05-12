@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class EventController extends Controller
 {
@@ -37,8 +38,51 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::withCount('registrations')->latest()->paginate(10);
-
         return view('events.index', compact('events'));
+    }
+    
+    public function getEventsData(Request $request)
+    {
+        $events = Event::withCount('registrations')->select('events.*');
+
+        return DataTables::of($events)
+            ->addIndexColumn()
+            ->addColumn('image', function ($event) {
+                return $event->image ? asset($event->image) : null;
+            })
+            ->addColumn('submission_deadline', function ($event) {
+                return $event->submission_deadline?->format('Y-m-d') ?? '-';
+            })
+            ->addColumn('event_date', function ($event) {
+                return $event->event_date?->format('Y-m-d') ?? '-';
+            })
+            ->addColumn('registrations_count', function ($event) {
+                return $event->registrations_count ?? 0;
+            })
+            ->addColumn('actions', function ($event) {
+                return '<div class="actions-menu">
+                    <label class="hamburger">
+                        <input type="checkbox" onchange="toggleActionsMenu(this)">
+                        <svg viewBox="0 0 32 32">
+                            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                            <path class="line" d="M7 16 27 16"></path>
+                        </svg>
+                    </label>
+                    <div class="actions-dropdown">
+                        <a href="' . route('events.show', $event) . '">
+                            <i class="fas fa-eye text-blue-500"></i> View
+                        </a>
+                        <a href="' . route('events.edit', $event) . '">
+                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                        </a>
+                        <button onclick="deleteEvent(' . $event->id . ', \'' . addslashes($event->title) . '\')">
+                            <i class="fas fa-trash text-red-500"></i> Delete
+                        </button>
+                    </div>
+                </div>';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
     }
 
     public function create()
@@ -171,28 +215,15 @@ class EventController extends Controller
         ], 201);
     }
 
-    public function show(Event $event, Request $request)
+    public function show(Event $event)
     {
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'event' => $this->eventPayload($event),
-            ]);
-        }
-
-        return redirect()->route('events.index');
+        $event->loadCount('registrations');
+        return view('events.show', compact('event'));
     }
 
-    public function edit(Event $event, Request $request)
+    public function edit(Event $event)
     {
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'event' => $this->eventPayload($event),
-            ]);
-        }
-
-        return redirect()->route('events.index');
+        return view('events.edit', compact('event'));
     }
 
     public function update(Request $request, Event $event)

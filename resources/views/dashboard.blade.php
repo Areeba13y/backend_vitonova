@@ -4,68 +4,139 @@
 @section('page_title', 'Dashboard')
 
 @section('content')
-<!-- Welcome Section -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-8">
-    <div class="flex items-center justify-between">
+<!-- Stats Cards Row -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+    @php
+        $stats = [
+            [
+                'title' => 'Total Team Members',
+                'value' => \App\Models\User::whereHas('role', fn($q) => $q->where('code', 'team_member'))->count(),
+                'icon' => 'fa-users',
+                'bg' => 'bg-blue-500'
+            ],
+            [
+                'title' => 'Total Units',
+                'value' => \App\Models\Unit::count(),
+                'icon' => 'fa-building',
+                'bg' => 'bg-purple-500'
+            ],
+            [
+                'title' => 'Total Events',
+                'value' => \App\Models\Event::count(),
+                'icon' => 'fa-calendar-check',
+                'bg' => 'bg-green-500'
+            ],
+            [
+                'title' => 'New Applications',
+                'value' => \App\Models\TeamApplication::where('status', 'pending')->count(),
+                'icon' => 'fa-user-plus',
+                'bg' => 'bg-orange-500'
+            ]
+        ];
+    @endphp
+    
+    @foreach($stats as $stat)
+    <div class="bg-white rounded-lg p-6 flex items-center justify-between shadow-sm">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">Welcome to Admin System</h1>
-            <p class="text-gray-600">Manage users and system settings efficiently</p>
+            <p class="text-sm text-gray-500 font-medium">{{ $stat['title'] }}</p>
+            <p class="text-3xl font-bold text-gray-800 mt-1">{{ $stat['value'] }}</p>
         </div>
-        <div class="bg-gradient-to-r from-green-400 to-green-500 p-4 rounded-lg">
-            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-            </svg>
+        <div class="w-12 h-12 rounded-full {{ $stat['bg'] }} flex items-center justify-center shadow-md">
+            <i class="fas {{ $stat['icon'] }} text-white text-lg"></i>
         </div>
     </div>
+    @endforeach
 </div>
 
-<!-- Quick Actions -->
-<div class="bg-white rounded-lg shadow-md p-6 mb-8">
-    <h2 class="text-xl font-semibold text-gray-800 mb-6">Quick Actions</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- User Management -->
-        <a href="/backend_vitonova/users" class="flex flex-col items-center p-6 border border-gray-200 rounded-lg group transition-all duration-200">
-            <div class="rounded-lg mb-4 p-4 shadow-lg" style="background: linear-gradient(135deg, #3b82f6 60%, #06b6d4 100%); color: #fff;">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-            </div>
-            <span class="font-semibold">User Management</span>
-            <span class="text-sm text-gray-500">Manage system users</span>
-        </a>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Recent Users Table -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-semibold text-gray-800">Recent Team Members</h3>
+            <a href="{{ route('users.index') }}" class="text-sm text-blue-500 hover:text-blue-700 font-medium">View All</a>
+        </div>
+        <table class="w-full">
+            <thead>
+                <tr class="text-left border-b border-gray-100">
+                    <th class="text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Name</th>
+                    <th class="text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Unit</th>
+                    <th class="text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Designation</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-gray-600">
+                @php
+                    $recentUsers = \App\Models\User::whereHas('role', fn($q) => $q->where('code', 'team_member'))
+                        ->with('unit')
+                        ->latest()
+                        ->take(5)
+                        ->get();
+                @endphp
+                
+                @forelse($recentUsers as $user)
+                <tr class="border-b border-gray-50 last:border-0">
+                    <td class="py-3">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold mr-3">
+                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">{{ $user->name }}</p>
+                                <p class="text-xs text-gray-500">{{ $user->email ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-3">{{ $user->unit?->name ?? '-' }}</td>
+                    <td class="py-3">{{ $user->designation ?? '-' }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="3" class="py-6 text-center text-gray-500">No team members found</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-        <!-- Event Management -->
-        <a href="{{ route('events.index') }}" class="flex flex-col items-center p-6 border border-gray-200 rounded-lg group transition-all duration-200">
-            <div class="rounded-lg mb-4 p-4 shadow-lg" style="background: linear-gradient(135deg, #22c55e 60%, #10b981 100%); color: #fff;">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
-                </svg>
+    <!-- Quick Actions & Status -->
+    <div class="space-y-6">
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-base font-semibold text-gray-800 mb-4">Quick Actions</h3>
+            <div class="space-y-2">
+                <a href="{{ route('users.index') }}" class="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-plus text-blue-500 mr-3"></i>
+                    <span class="text-sm font-medium text-gray-700">Add Team Member</span>
+                </a>
+                <a href="{{ route('events.index') }}" class="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-plus text-green-500 mr-3"></i>
+                    <span class="text-sm font-medium text-gray-700">Create Event</span>
+                </a>
+                <a href="{{ route('team-applications.index') }}" class="flex items-center p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-clipboard-list text-purple-500 mr-3"></i>
+                    <span class="text-sm font-medium text-gray-700">Review Applications</span>
+                </a>
             </div>
-            <span class="font-semibold">Event Management</span>
-            <span class="text-sm text-gray-500">Create and manage events</span>
-        </a>
-        
-        <!-- Settings -->
-        <a href="#" class="flex flex-col items-center p-6 border border-gray-200 rounded-lg group transition-all duration-200">
-            <div class="rounded-lg mb-4 p-4 shadow-lg" style="background: linear-gradient(135deg, #6366f1 60%, #3b82f6 100%); color: #fff;">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19.14,12.94a1,1,0,0,0-.26-1.09l-1.43-1.43a1,1,0,0,0-1.09-.26l-1.7.68a6.07,6.07,0,0,0-1.45-.85l-.26-1.81A1,1,0,0,0,12,6h-2a1,1,0,0,0-1,.88l-.26,1.81a6.07,6.07,0,0,0-1.45.85l-1.7-.68a1,1,0,0,0-1.09.26L4.12,11.85a1,1,0,0,0-.26,1.09l.68,1.7a6.07,6.07,0,0,0,.85,1.45l-1.81.26A1,1,0,0,0,4,18h2a1,1,0,0,0,1-.88l.26-1.81a6.07,6.07,0,0,0,1.45-.85l1.7.68a1,1,0,0,0,1.09-.26l1.43-1.43a1,1,0,0,0,.26-1.09Z"/>
-                </svg>
+        </div>
+
+        <!-- System Status -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-base font-semibold text-gray-800 mb-4">System Status</h3>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Database</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Connected</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Security</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Active</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600">Last Backup</span>
+                    <span class="text-xs text-gray-500">{{ now()->format('M d, Y') }}</span>
+                </div>
             </div>
-            <span class="font-semibold">Settings</span>
-            <span class="text-sm text-gray-500">System configuration</span>
-        </a>
-        
-        <!-- Reports -->
-        <a href="#" class="flex flex-col items-center p-6 border border-gray-200 rounded-lg group transition-all duration-200">
-            <div class="rounded-lg mb-4 p-4 shadow-lg" style="background: linear-gradient(135deg, #f59e42 60%, #f43f5e 100%); color: #fff;">
-                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-2-8H7v2h10v-2zm0-4H7v2h10V7zm0 8H7v2h10v-2z"/>
-                </svg>
-            </div>
-            <span class="font-semibold">Reports</span>
-            <span class="text-sm text-gray-500">View system reports</span>
-        </a>
+        </div>
     </div>
 </div>
 @endsection

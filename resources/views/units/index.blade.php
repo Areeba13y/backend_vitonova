@@ -4,126 +4,110 @@
 @section('page_title', 'Units')
 
 @section('content')
-<div class="bg-white rounded-lg shadow-md">
-    <div class="flex justify-between items-center p-6 border-b border-gray-200">
-        <h4 class="text-xl font-semibold text-gray-800">Units</h4>
-        <button type="button" onclick="openUnitModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
-            Add Unit
-        </button>
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h2 class="text-xl font-semibold text-gray-800">All Units</h2>
+        <p class="text-sm text-gray-500 mt-1">Manage your organizational units</p>
     </div>
-
-    <div class="p-6 overflow-x-auto">
-        <table class="min-w-full table-auto">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                @forelse($units as $unit)
-                    <tr>
-                        <td class="px-6 py-4 text-sm text-gray-900">{{ $unit->name }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-600">{{ $unit->code }}</td>
-                        <td class="px-6 py-4 text-sm">
-                            <div class="flex items-center gap-3">
-                                <button type="button" class="text-yellow-600 hover:text-yellow-900" title="Edit"
-                                    onclick='openUnitModal(@json(["id"=>$unit->id,"name"=>$unit->name]))'>
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </button>
-                                <form method="POST" action="{{ route('units.destroy', $unit) }}" class="js-unit-delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 7h12M9 7V4h6v3m-7 4v6m4-6v6m4-6v6M8 7l1 13h6l1-13"></path></svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr><td colspan="3" class="px-6 py-8 text-center text-gray-500">No units found.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
-        <div class="mt-6">{{ $units->links() }}</div>
-    </div>
+    <a href="{{ route('units.create') }}" class="inline-flex items-center px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
+        <i class="fas fa-plus mr-2"></i>
+        Add Unit
+    </a>
 </div>
 
-<div id="unitModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 px-4">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
-        <h5 id="unitModalTitle" class="text-lg font-semibold text-gray-800 mb-4">Add Unit</h5>
-        <form id="unitForm" method="POST" action="{{ route('units.store') }}">
-            @csrf
-            <input type="hidden" id="unitMethod" name="_method" value="POST">
-            <div class="mb-4">
-                <label class="block text-sm text-gray-700 mb-2">Unit Name</label>
-                <input id="unitName" type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-md">
+<div class="bg-white rounded-lg shadow-sm">
+    <div class="p-6 relative">
+        <div id="unitsTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
+            <div class="flex items-center">
+                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <span class="text-gray-600">Loading data...</span>
             </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeUnitModal()" class="px-3 py-2 bg-gray-200 rounded-md">Cancel</button>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded-md">Save</button>
-            </div>
-        </form>
+        </div>
+        <table id="unitsTable" class="w-full">
+            <thead>
+                <tr>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Name</th>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Members</th>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-gray-600">
+            </tbody>
+        </table>
     </div>
 </div>
 
 <script>
-function openUnitModal(unit = null) {
-    const modal = document.getElementById('unitModal');
-    const form = document.getElementById('unitForm');
-    const method = document.getElementById('unitMethod');
-    const title = document.getElementById('unitModalTitle');
-    const name = document.getElementById('unitName');
-
-    if (unit && unit.id) {
-        form.action = `{{ url('/units') }}/${unit.id}`;
-        method.value = 'PUT';
-        title.textContent = 'Edit Unit';
-        name.value = unit.name || '';
-    } else {
-        form.action = `{{ route('units.store') }}`;
-        method.value = 'POST';
-        title.textContent = 'Add Unit';
-        name.value = '';
-    }
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function closeUnitModal() {
-    const modal = document.getElementById('unitModal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-}
-
-document.querySelectorAll('.js-unit-delete-form').forEach((form) => {
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        if (!window.Swal || typeof window.Swal.fire !== 'function') {
-            if (confirm('Delete this unit?')) form.submit();
-            return;
+$(document).ready(function() {
+    $('#unitsTable').DataTable({
+        serverSide: true,
+        ajax: {
+            url: '{{ route("units.datatable") }}',
+            type: 'GET',
+            beforeSend: function() {
+                $('#unitsTableLoading').show();
+            },
+            complete: function() {
+                $('#unitsTableLoading').hide();
+            },
+            error: function(xhr, error, thrown) {
+                console.error('DataTable Error:', xhr.responseText);
+                $('#unitsTableLoading').hide();
+            }
+        },
+        columns: [
+            { data: 'name', name: 'name' },
+            { data: 'members_count', name: 'members_count', searchable: false, orderable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[0, 'asc']],
+        dom: '<"flex justify-between items-center mb-4"<"flex items-center"l><"flex-1"f><"flex items-center"B>>rtip',
+        buttons: [
+            { extend: 'csv', className: 'mr-2', text: '<i class="fas fa-file-csv mr-1"></i> CSV' }
+        ],
+        language: {
+            search: "",
+            searchPlaceholder: "Search units...",
+            lengthMenu: "Show _MENU_",
+            info: "Showing _START_ to _END_ of _TOTAL_ units",
+            emptyTable: '<div class="text-center py-8"><i class="fas fa-building text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No units found</p></div>',
+            zeroRecords: '<div class="text-center py-8"><i class="fas fa-search text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No matching records found</p></div>',
+            paginate: {
+                first: '<i class="fas fa-chevrons-left"></i>',
+                last: '<i class="fas fa-chevrons-right"></i>',
+                next: '<i class="fas fa-chevron-right"></i>',
+                previous: '<i class="fas fa-chevron-left"></i>'
+            }
         }
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Delete this unit?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) form.submit();
-        });
     });
 });
 
-@if(session('success'))
-if (window.Toast && typeof window.Toast.fire === 'function') {
-    Toast.fire({ icon: 'success', title: @json(session('success')) });
+function deleteUnit(id) {
+    Swal.fire({
+        title: 'Delete Unit',
+        text: 'Are you sure you want to delete this unit?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, Delete'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: `${baseUrl}/units/${id}`,
+                type: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    if (data.success || data.status === 'success') {
+                        Toast.fire({ icon: 'success', title: 'Unit deleted successfully!' });
+                        $('#unitsTable').DataTable().ajax.reload();
+                    }
+                }
+            });
+        }
+    });
 }
-@endif
 </script>
 @endsection
-

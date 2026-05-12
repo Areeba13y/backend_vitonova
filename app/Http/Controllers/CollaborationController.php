@@ -6,6 +6,7 @@ use App\Models\Collaboration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class CollaborationController extends Controller
 {
@@ -27,10 +28,49 @@ class CollaborationController extends Controller
         $collaborations = Collaboration::latest()->paginate(10);
         return view('collaborations.index', compact('collaborations'));
     }
+    
+    public function getCollaborationsData(Request $request)
+    {
+        $collaborations = Collaboration::select('collaborations.*');
+
+        return DataTables::of($collaborations)
+            ->addIndexColumn()
+            ->addColumn('logo', function ($item) {
+                return $item->logo ? asset($item->logo) : null;
+            })
+            ->addColumn('representative', function ($item) {
+                $rep = trim(($item->representative_designation ?: '') . ' ' . ($item->representative_name ?: ''));
+                return $rep ?: '-';
+            })
+            ->addColumn('is_active', function ($item) {
+                return $item->is_active;
+            })
+            ->addColumn('actions', function ($item) {
+                return '<div class="actions-menu">
+                    <label class="hamburger">
+                        <input type="checkbox" onchange="toggleActionsMenu(this)">
+                        <svg viewBox="0 0 32 32">
+                            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                            <path class="line" d="M7 16 27 16"></path>
+                        </svg>
+                    </label>
+                    <div class="actions-dropdown">
+                        <a href="' . route('collaborations.edit', $item) . '">
+                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                        </a>
+                        <button onclick="deleteCollaboration(' . $item->id . ', \'' . addslashes($item->organization_name) . '\')">
+                            <i class="fas fa-trash text-red-500"></i> Delete
+                        </button>
+                    </div>
+                </div>';
+            })
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
 
     public function create()
     {
-        return redirect()->route('collaborations.index');
+        return view('collaborations.create');
     }
 
     public function store(Request $request)
@@ -59,18 +99,12 @@ class CollaborationController extends Controller
 
     public function show(Collaboration $collaboration)
     {
-        return response()->json([
-            'success' => true,
-            'collaboration' => $this->payload($collaboration),
-        ]);
+        return view('collaborations.show', compact('collaboration'));
     }
 
     public function edit(Collaboration $collaboration)
     {
-        return response()->json([
-            'success' => true,
-            'collaboration' => $this->payload($collaboration),
-        ]);
+        return view('collaborations.edit', compact('collaboration'));
     }
 
     public function update(Request $request, Collaboration $collaboration)

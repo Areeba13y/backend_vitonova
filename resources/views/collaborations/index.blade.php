@@ -1,83 +1,117 @@
 @extends('layouts.master')
 
 @section('title', 'Collaborations')
-@section('page_title', 'Collaboration Management')
+@section('page_title', 'Collaborations')
 
 @section('content')
-<div class="bg-white rounded-lg shadow-md">
-    <div class="flex justify-between items-center p-6 border-b border-gray-200">
-        <h4 class="text-xl font-semibold text-gray-800">Collaborations</h4>
-        <button onclick="openAddCollaborationModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">Add Collaboration</button>
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h2 class="text-xl font-semibold text-gray-800">All Collaborations</h2>
+        <p class="text-sm text-gray-500 mt-1">Manage your partnerships</p>
     </div>
+    <a href="{{ route('collaborations.create') }}" class="inline-flex items-center px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
+        <i class="fas fa-plus mr-2"></i>
+        Add Collaboration
+    </a>
+</div>
 
-    <div class="p-6">
-        <div class="overflow-x-auto">
-            <table class="min-w-full table-auto">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtitle</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Representative</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="collaborationsTableBody" class="bg-white divide-y divide-gray-200">
-                    @forelse($collaborations as $item)
-                        @php
-                            $itemData = [
-                                'id' => $item->id,
-                                'logo' => $item->logo,
-                                'logo_url' => asset($item->logo),
-                                'organization_name' => $item->organization_name,
-                                'subtitle' => $item->subtitle,
-                                'description' => $item->description,
-                                'representative_designation' => $item->representative_designation,
-                                'representative_name' => $item->representative_name,
-                                'is_active' => $item->is_active,
-                            ];
-                        @endphp
-                        <tr id="collaboration-row-{{ $item->id }}" data-collaboration-id="{{ $item->id }}">
-                            <td class="px-6 py-4"><img src="{{ asset($item->logo) }}" class="w-14 h-14 rounded object-cover border" alt="{{ $item->organization_name }}"></td>
-                            <td class="px-6 py-4 text-sm font-semibold text-gray-900">{{ $item->organization_name }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-600">{{ $item->subtitle ?: '-' }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-700">{{ trim(($item->representative_designation ?: '') . ' ' . ($item->representative_name ?: '')) ?: '-' }}</td>
-                            <td class="px-6 py-4 text-sm">
-                                <button
-                                    type="button"
-                                    onclick="toggleCollaborationActive({{ $item->id }})"
-                                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {{ $item->is_active ? 'bg-green-500' : 'bg-gray-300' }}"
-                                    aria-label="Toggle active status"
-                                >
-                                    <span class="inline-block h-4 w-4 transform rounded-full bg-white transition {{ $item->is_active ? 'translate-x-6' : 'translate-x-1' }}"></span>
-                                </button>
-                            </td>
-                            <td class="px-6 py-4 text-sm">
-                                <div class="flex gap-3">
-                                    <button onclick="editCollaboration(this)" data-collaboration="{{ json_encode($itemData, JSON_HEX_APOS | JSON_HEX_QUOT) }}" class="text-yellow-600">Edit</button>
-                                    <button onclick="deleteCollaboration({{ $item->id }}, {{ json_encode($item->organization_name) }})" class="text-red-600">Delete</button>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr id="empty-collaborations-row"><td colspan="6" class="px-6 py-10 text-center text-gray-500">No collaborations found.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+<div class="bg-white rounded-lg shadow-sm">
+    <div class="p-6 relative">
+        <div id="collaborationsTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
+            <div class="flex items-center">
+                <i class="fas fa-spinner fa-spin text-indigo-500 text-2xl mr-3"></i>
+                <span class="text-gray-600">Loading data...</span>
+            </div>
         </div>
-
-        @if($collaborations->hasPages())
-            <div class="mt-6">{{ $collaborations->links() }}</div>
-        @endif
+        <table id="collaborationsTable" class="w-full">
+            <thead>
+                <tr>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Logo</th>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Organization</th>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Representative</th>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Status</th>
+                    <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-gray-600">
+            </tbody>
+        </table>
     </div>
 </div>
 
 @include('components.collaboration-modal')
 
 <script>
+$(document).ready(function() {
+    $('#collaborationsTable').DataTable({
+        serverSide: true,
+        ajax: {
+            url: '{{ route("collaborations.datatable") }}',
+            type: 'GET',
+            beforeSend: function() {
+                $('#collaborationsTableLoading').show();
+            },
+            complete: function() {
+                $('#collaborationsTableLoading').hide();
+            },
+            error: function(xhr, error, thrown) {
+                console.error('DataTable Error:', xhr.responseText);
+                $('#collaborationsTableLoading').hide();
+            }
+        },
+        columns: [
+            { 
+                data: 'logo', 
+                name: 'logo',
+                orderable: false,
+                searchable: false,
+                render: function(data) {
+                    if (data) {
+                        return '<img src="' + data + '" alt="Logo" class="w-12 h-12 object-cover rounded">';
+                    }
+                    return '<div class="w-12 h-12 rounded bg-gray-100 flex items-center justify-center"><i class="fas fa-building text-gray-400"></i></div>';
+                }
+            },
+            { data: 'organization_name', name: 'organization_name' },
+            { data: 'representative', name: 'representative_name' },
+            { 
+                data: 'is_active', 
+                name: 'is_active',
+                searchable: false,
+                orderable: false,
+                render: function(data) {
+                    if (data) {
+                        return '<span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">Active</span>';
+                    }
+                    return '<span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded">Inactive</span>';
+                }
+            },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        order: [[1, 'asc']],
+        dom: '<"flex justify-between items-center mb-4"<"flex items-center"l><"flex-1"f><"flex items-center"B>>rtip',
+        buttons: [
+            { extend: 'csv', className: 'mr-2', text: '<i class="fas fa-file-csv mr-1"></i> CSV' }
+        ],
+        language: {
+            search: "",
+            searchPlaceholder: "Search collaborations...",
+            lengthMenu: "Show _MENU_",
+            info: "Showing _START_ to _END_ of _TOTAL_ collaborations",
+            emptyTable: '<div class="text-center py-8"><i class="fas fa-handshake text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No collaborations found</p></div>',
+            zeroRecords: '<div class="text-center py-8"><i class="fas fa-search text-gray-300 text-4xl mb-3"></i><p class="text-gray-500">No matching records found</p></div>',
+            paginate: {
+                first: '<i class="fas fa-chevrons-left"></i>',
+                last: '<i class="fas fa-chevrons-right"></i>',
+                next: '<i class="fas fa-chevron-right"></i>',
+                previous: '<i class="fas fa-chevron-left"></i>'
+            }
+        }
+    });
+});
+
 function toggleCollaborationActive(id) {
-    fetch(`{{ route('collaborations.toggle-active', ':id') }}`.replace(':id', id), {
+    fetch(`/collaborations/${id}/toggle-active`, {
         method: 'PATCH',
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
@@ -85,17 +119,38 @@ function toggleCollaborationActive(id) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         }
     })
-    .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'Update failed');
-        return data;
-    })
-    .then((data) => {
+    .then(response => response.json())
+    .then(data => {
         Toast.fire({ icon: 'success', title: data.message });
-        window.location.reload();
-    })
-    .catch(() => {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Unable to update status.' });
+        $('#collaborationsTable').DataTable().ajax.reload();
+    });
+}
+
+function deleteCollaboration(id, name) {
+    Swal.fire({
+        title: 'Delete Collaboration',
+        text: 'Are you sure you want to delete "' + name + '"?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Yes, Delete'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/collaborations/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Toast.fire({ icon: 'success', title: 'Collaboration deleted successfully!' });
+                    $('#collaborationsTable').DataTable().ajax.reload();
+                }
+            });
+        }
     });
 }
 </script>

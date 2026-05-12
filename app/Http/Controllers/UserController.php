@@ -10,9 +10,79 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('profile.index', compact('user'));
+    }
+
+    public function updateOwnProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'contact' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
+            'designation' => 'nullable|string|max:255',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $updateData = [
+            'name' => $request->name,
+            'email' => $request->email,
+            'contact' => $request->contact,
+            'address' => $request->address,
+            'designation' => $request->designation,
+        ];
+
+        if ($request->hasFile('profile_picture')) {
+            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
+                Storage::disk('public')->delete($user->profile_picture);
+            }
+            $updateData['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+        }
+
+        $user->update($updateData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully!'
+        ]);
+    }
+
+    public function updateOwnPassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Current password is incorrect.',
+                'errors' => ['current_password' => ['Current password is incorrect.']]
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully!'
+        ]);
+    }
+
     public function index(Request $request)
     {
         $selectedRoleId = $request->input('role_id');
@@ -87,34 +157,32 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('users.create');
+        $roles = Role::query()->orderBy('name')->get(['id', 'name', 'code']);
+        $units = Unit::query()->orderBy('name')->get(['id', 'name']);
+        return view('users.create', compact('roles', 'units'));
     }
 
     public function store(Request $request)
     {
         try {
-            $role = Role::find($request->role_id);
-            $isAdmin = $role && $role->code === 'admin';
+            $teamMemberRole = Role::where('code', 'team_member')->first();
+            
             $rules = [
                 'role_id' => 'nullable|exists:roles,id',
                 'unit_id' => 'nullable|exists:units,id',
-                'name' => 'nullable|string|max:255',
-                'email' => 'nullable|string|email|max:255|unique:users',
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
                 'contact' => 'nullable|string|max:255',
                 'address' => 'nullable|string',
                 'designation' => 'nullable|string|max:255',
                 'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'details' => 'nullable|string',
             ];
-            if ($isAdmin) {
-                $rules['password'] = 'required|string|min:8|confirmed';
-            } else {
-                $rules['password'] = 'nullable|string|min:8|confirmed';
-            }
 
-            if ($role && $role->code === 'team_member') {
+            if ($teamMemberRole && (int)$request->role_id === $teamMemberRole->id) {
                 $rules['unit_id'] = 'required|exists:units,id';
             }
+            
             $request->validate($rules);
 
             $profilePicturePath = null;
@@ -123,11 +191,11 @@ class UserController extends Controller
             }
 
             $user = User::create([
-                'role_id' => $request->role_id,
+                'role_id' => $request->role_id ?? $teamMemberRole?->id,
                 'unit_id' => $request->unit_id,
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => $request->password ? Hash::make($request->password) : null,
+                'password' => Hash::make('123456'),
                 'contact' => $request->contact,
                 'address' => $request->address,
                 'designation' => $request->designation,
@@ -137,8 +205,8 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'User created successfully.',
-                'user' => $user
+                'message' => 'User created successfully! Default password: 123456',
+                'redirect' => route('users.index')
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -146,6 +214,11 @@ class UserController extends Controller
                 'message' => 'Validation failed.',
                 'errors' => $e->errors()
             ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -161,7 +234,34 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        $roles = Role::query()->orderBy('name')->get(['id', 'name', 'code']);
+        $units = Unit::query()->orderBy('name')->get(['id', 'name']);
+        return view('users.edit', compact('user', 'roles', 'units'));
+    }
+
+    public function updatePassword(Request $request, User $user)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Current password is incorrect.',
+                'errors' => ['current_password' => ['Current password is incorrect.']]
+            ], 422);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password updated successfully!'
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -288,6 +388,63 @@ class UserController extends Controller
                 'message' => 'An error occurred while deleting the user: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Get users data for DataTables (Server-side rendering)
+     */
+    public function getUsersData(Request $request)
+    {
+        $teamMemberRole = Role::where('code', 'team_member')->first();
+        
+        $users = User::with(['unit'])
+            ->where('role_id', $teamMemberRole->id)
+            ->select('users.*');
+
+        return DataTables::of($users)
+            ->addIndexColumn()
+            ->addColumn('name', function ($user) {
+                $avatar = $user->profile_picture 
+                    ? '<img class="w-8 h-8 rounded-full object-cover mr-3" src="' . asset('storage/' . $user->profile_picture) . '" alt="' . $user->name . '">'
+                    : '<div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs mr-3">' . strtoupper(substr($user->name, 0, 1)) . '</div>';
+                return '<div class="flex items-center">' . $avatar . '<span class="font-medium text-gray-900">' . $user->name . '</span></div>';
+            })
+            ->addColumn('email', function ($user) {
+                return $user->email ?? '-';
+            })
+            ->addColumn('unit', function ($user) {
+                return $user->unit?->name ?? '-';
+            })
+            ->addColumn('designation', function ($user) {
+                return $user->designation ?? '-';
+            })
+            ->addColumn('contact', function ($user) {
+                return $user->contact ?? '-';
+            })
+            ->addColumn('actions', function ($user) {
+                return '<div class="actions-menu">
+                    <label class="hamburger">
+                        <input type="checkbox" onchange="toggleActionsMenu(this)">
+                        <svg viewBox="0 0 32 32">
+                            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                            <path class="line" d="M7 16 27 16"></path>
+                        </svg>
+                    </label>
+                    <div class="actions-dropdown">
+                        <a href="' . route('users.show', $user) . '">
+                            <i class="fas fa-eye text-blue-500"></i> View
+                        </a>
+                        <a href="' . route('users.edit', $user) . '">
+                            <i class="fas fa-edit text-yellow-500"></i> Edit
+                        </a>
+                        <button onclick="deleteUser(' . $user->id . ', \'' . addslashes($user->name) . '\')">
+                            <i class="fas fa-trash text-red-500"></i> Delete
+                        </button>
+                    </div>
+                </div>';
+            })
+            ->rawColumns(['name', 'actions'])
+            ->make(true);
     }
 
     /**

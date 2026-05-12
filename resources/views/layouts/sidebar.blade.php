@@ -1,105 +1,119 @@
+<!-- Mobile Menu Toggle -->
+<div class="lg:hidden fixed top-4 left-4 z-50">
+    <label class="hamburger cursor-pointer" id="mobile-menu-toggle">
+        <input type="checkbox" id="hamburger-checkbox">
+        <svg viewBox="0 0 32 32" class="w-8 h-8">
+            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+            <path class="line" d="M7 16 27 16"></path>
+        </svg>
+    </label>
+</div>
+
+<!-- Mobile Overlay -->
+<div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
+
 <!-- Sidebar -->
-<div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+<div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
     <div class="flex flex-col h-full">
         <!-- Logo/Brand -->
-        <div class="flex items-center px-6 py-4 border-b border-gray-200">
-            <div class="bg-gradient-to-r from-green-400 to-green-500 p-2 rounded-lg mr-3">
-                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                </svg>
+        <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center mr-3">
+                    <i class="fas fa-shield-alt text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-gray-800">Admin Panel</h1>
+                    <p class="text-xs text-gray-500">Management System</p>
+                </div>
             </div>
-            <h1 class="text-lg font-bold text-gray-800">Admin System</h1>
+            <!-- Mobile Close Button -->
+            <label class="lg:hidden cursor-pointer" onclick="document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('mobile-menu-overlay').classList.add('hidden');">
+                <svg class="w-6 h-6 text-gray-500 hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </label>
         </div>
         
         <!-- Navigation Menu -->
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
             <!-- Dashboard -->
-            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-                </svg>
-                <span class="font-medium">Dashboard</span>
+            <a href="{{ route('dashboard') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="fas fa-chart-pie w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Dashboard</span>
             </a>
             
             <!-- Team Members -->
-            <a href="{{ route('users.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('users.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-                <span class="font-medium">Team Members</span>
+            <a href="{{ route('users.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <i class="fas fa-users w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Users</span>
             </a>
 
-            <a href="{{ route('units.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('units.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M4 4h16v4H4V4zm0 6h7v10H4V10zm9 0h7v10h-7V10z"/>
-                </svg>
-                <span class="font-medium">Units</span>
+            <!-- Units -->
+            <a href="{{ route('units.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('units.*') ? 'active' : '' }}">
+                <i class="fas fa-building w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Units</span>
             </a>
 
             <!-- Event Management -->
-            <a href="{{ route('events.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('events.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
-                </svg>
-                <span class="font-medium">Event Management</span>
+            <a href="{{ route('events.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('events.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Events</span>
             </a>
 
-            <a href="{{ route('collaborations.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('collaborations.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zM8 11c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5C15 14.17 10.33 13 8 13zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.98 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                </svg>
-                <span class="font-medium">Collaborations</span>
+            <!-- Collaborations -->
+            <a href="{{ route('collaborations.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('collaborations.*') ? 'active' : '' }}">
+                <i class="fas fa-handshake w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Collaborations</span>
             </a>
 
             <!-- Event Registrations -->
-            <a href="{{ route('event-registrations.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('event-registrations.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17 20h5V4H2v16h5v-2H4V6h16v12h-3v2zM9 8h9v2H9V8zm0 4h9v2H9v-2zm0 4h5v2H9v-2zm-4 0l2 2 4-4-1.41-1.41L7 15.17l-.59-.58L5 16z"/>
-                </svg>
-                <span class="font-medium">Event Registrations</span>
+            <a href="{{ route('event-registrations.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('event-registrations.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-list w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Registrations</span>
             </a>
 
             <!-- Team Applications -->
-            <a href="{{ route('team-applications.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('team-applications.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                <span class="font-medium">Team Applications</span>
+            <a href="{{ route('team-applications.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('team-applications.*') ? 'active' : '' }}">
+                <i class="fas fa-user-plus w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Applications</span>
             </a>
 
             <!-- Contact Messages -->
-            <a href="{{ route('admin.contacts.index') }}" class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-700 transition-colors duration-200 {{ request()->routeIs('admin.contacts.*') ? 'bg-green-50 text-green-700 border-r-2 border-green-500' : '' }}">
-                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                </svg>
-                <span class="font-medium">Contact Messages</span>
+            <a href="{{ route('admin.contacts.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}">
+                <i class="fas fa-envelope w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Messages</span>
             </a>
-            
         </nav>
         
         <!-- User Profile & Logout -->
-        <div class="border-t border-gray-200 p-4">
-            <div class="flex items-center mb-4">
-                <div class="bg-gray-300 rounded-full p-2 mr-3">
-                    <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
+        <div class="border-t border-gray-100 p-4">
+            <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors mb-2 {{ request()->routeIs('profile') ? 'bg-indigo-50' : '' }}">
+                @if(auth()->user()->profile_picture)
+                <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover mr-3">
+                @else
+                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold mr-3">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                 </div>
-                <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-800">{{ auth()->user()->name ?? 'Admin User' }}</p>
-                    <p class="text-xs text-gray-500">{{ auth()->user()->email ?? 'admin@example.com' }}</p>
+                @endif
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-800 truncate">{{ auth()->user()->name ?? 'Admin User' }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? 'admin@example.com' }}</p>
                 </div>
-            </div>
+                <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+            </a>
+            
+            <!-- Profile Button -->
+            <a href="{{ route('profile') }}" class="w-full flex items-center justify-center px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg transition-colors text-sm font-medium mb-2">
+                <i class="fas fa-user mr-2"></i>
+                My Profile
+            </a>
             
             <!-- Logout Button -->
             <form id="sidebar-logout-form" method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
-                <button type="submit" class="w-full flex items-center justify-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-200 text-sm font-medium">
-                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                    </svg>
-                    <span class="sidebar-logout-text">Logout</span>
-                    <span class="sidebar-logout-loading hidden">Logging out...</span>
+                <button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm font-medium">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    Logout
                 </button>
             </form>
         </div>
@@ -109,18 +123,31 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const logoutForm = document.getElementById('sidebar-logout-form');
+        const hamburgerCheckbox = document.getElementById('hamburger-checkbox');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobile-menu-overlay');
+        
+        if (hamburgerCheckbox && sidebar && overlay) {
+            hamburgerCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            });
+            
+            overlay.addEventListener('click', function() {
+                hamburgerCheckbox.checked = false;
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+        }
         
         if (logoutForm) {
             logoutForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
-                const button = this.querySelector('button');
-                const logoutText = button.querySelector('.sidebar-logout-text');
-                const logoutLoading = button.querySelector('.sidebar-logout-loading');
-                
-                button.disabled = true;
-                logoutText.classList.add('hidden');
-                logoutLoading.classList.remove('hidden');
                 
                 const formData = new FormData(this);
                 
@@ -137,27 +164,12 @@
                     if (response.ok) {
                         Toast.fire({
                             icon: 'success',
-                            title: 'Logged out successfully! See you soon.'
+                            title: 'Logged out successfully!'
                         });
                         setTimeout(() => {
                             window.location.href = '{{ url("/login") }}';
                         }, 1500);
-                    } else {
-                        throw new Error('Logout failed');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Logout Error',
-                        text: 'Error logging out. Please try again.',
-                        confirmButtonText: 'Try Again'
-                    });
-                    
-                    button.disabled = false;
-                    logoutText.classList.remove('hidden');
-                    logoutLoading.classList.add('hidden');
                 });
             });
         }

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use DataTables;
 
 class TeamApplicationController extends Controller
 {
@@ -22,9 +23,57 @@ class TeamApplicationController extends Controller
      */
     public function index()
     {
-        $applications = TeamApplication::with('user')->latest()->paginate(10);
         $units = Unit::orderBy('name')->get(['id', 'name']);
-        return view('registrations.team-index', compact('applications', 'units'));
+        return view('registrations.team-index', compact('units'));
+    }
+
+    /**
+     * Get applications data for DataTables
+     */
+    public function getApplicationsData(Request $request)
+    {
+        $applications = TeamApplication::with('user')->select('team_applications.*');
+
+        return DataTables::of($applications)
+            ->addIndexColumn()
+            ->addColumn('name', function ($app) {
+                return $app->user?->name ?? 'Unknown';
+            })
+            ->addColumn('email', function ($app) {
+                return $app->user?->email ?? 'N/A';
+            })
+            ->addColumn('position', function ($app) {
+                return $app->position ?? '-';
+            })
+            ->addColumn('status', function ($app) {
+                $bg = $app->status === 'approved' ? 'bg-green-100 text-green-700' : ($app->status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700');
+                return '<span class="px-2 py-1 rounded text-xs font-medium ' . $bg . '">' . ucfirst($app->status) . '</span>';
+            })
+            ->addColumn('date', function ($app) {
+                return $app->created_at->format('Y-m-d');
+            })
+            ->addColumn('actions', function ($app) {
+                return '<div class="actions-menu">
+                    <label class="hamburger">
+                        <input type="checkbox" onchange="toggleActionsMenu(this)">
+                        <svg viewBox="0 0 32 32">
+                            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
+                            <path class="line" d="M7 16 27 16"></path>
+                        </svg>
+                    </label>
+                    <div class="actions-dropdown">
+                        <a href="' . route('team-applications.download', $app->id) . '">
+                            <i class="fas fa-download text-blue-500"></i> Download Resume
+                        </a>
+                        ' . ($app->status === 'pending' ? '<button onclick="openApproveModal(' . $app->id . ')"><i class="fas fa-check text-green-500"></i> Approve</button>' : '') . '
+                        <button onclick="deleteApplication(' . $app->id . ')">
+                            <i class="fas fa-trash text-red-500"></i> Delete
+                        </button>
+                    </div>
+                </div>';
+            })
+            ->rawColumns(['status', 'actions'])
+            ->make(true);
     }
 
     /**
