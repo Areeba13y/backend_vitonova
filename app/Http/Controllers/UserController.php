@@ -19,6 +19,12 @@ class UserController extends Controller
         $selectedEventId = $request->input('event_id');
         $selectedUnitId = $request->input('unit_id');
         $search = $request->input('search');
+        
+        $teamMemberRole = Role::query()->where('code', 'team_member')->first();
+        if (!$selectedRoleId && $teamMemberRole) {
+            $selectedRoleId = $teamMemberRole->id;
+        }
+        
         $eventRegistrantRole = Role::query()->where('code', 'event_registrant')->first();
         $showEventFilter = $selectedRoleId && $eventRegistrantRole && (int) $selectedRoleId === (int) $eventRegistrantRole->id;
 
