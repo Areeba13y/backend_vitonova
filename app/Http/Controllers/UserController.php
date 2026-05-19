@@ -393,6 +393,7 @@ class UserController extends Controller
         
         $users = User::with(['unit'])
             ->where('role_id', $teamMemberRole->id)
+            ->where('id', '!=', auth()->id())
             ->when($request->unit_id, function ($query) use ($request) {
                 $query->where('unit_id', $request->unit_id);
             })
