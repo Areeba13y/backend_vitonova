@@ -66,12 +66,6 @@
                 <span class="ml-3 font-medium">Collaborations</span>
             </a>
 
-            <!-- Event Registrations -->
-            <a href="{{ route('event-registrations.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('event-registrations.*') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-list w-5 text-gray-400"></i>
-                <span class="ml-3 font-medium">Registrations</span>
-            </a>
-
             <!-- Team Applications -->
             <a href="{{ route('team-applications.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('team-applications.*') ? 'active' : '' }}">
                 <i class="fas fa-user-plus w-5 text-gray-400"></i>

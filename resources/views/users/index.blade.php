@@ -58,6 +58,13 @@
 $(document).ready(function() {
     let usersTable;
     
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialUnitId = urlParams.get('unit_id') || '';
+    
+    if (initialUnitId) {
+        $('#unitFilter').val(initialUnitId);
+    }
+    
     function initDataTable(unitId = '') {
         if (usersTable) {
             usersTable.destroy();
@@ -114,7 +121,7 @@ $(document).ready(function() {
         });
     }
     
-    initDataTable();
+    initDataTable(initialUnitId);
     
     $('#unitFilter').on('change', function() {
         initDataTable($(this).val());

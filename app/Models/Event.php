@@ -29,6 +29,6 @@ class Event extends Model
 
     public function registrations()
     {
-        return $this->hasMany(UserEvent::class);
+        return $this->hasMany(UserEvent::class)->withTrashed();
     }
 }

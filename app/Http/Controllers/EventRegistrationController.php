@@ -8,19 +8,10 @@ use Illuminate\Http\Request;
 
 class EventRegistrationController extends Controller
 {
-    public function index()
-    {
-        $events = Event::query()
-            ->withCount('registrations')
-            ->latest()
-            ->paginate(9);
-
-        return view('registrations.index', compact('events'));
-    }
-
     public function eventRegistrations(Request $request, Event $event)
     {
         $search = trim((string) $request->query('search', ''));
+        $eventFilter = $request->query('event_filter', 'upcoming');
 
         $registrations = $event->registrations()
             ->with('user')
@@ -39,7 +30,7 @@ class EventRegistrationController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('registrations.event', compact('event', 'registrations', 'search'));
+        return view('registrations.event', compact('event', 'registrations', 'search', 'eventFilter'));
     }
 
     public function show(Event $event, UserEvent $registration)

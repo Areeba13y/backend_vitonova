@@ -45,7 +45,7 @@ class UserController extends Controller
             if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
                 Storage::disk('public')->delete($user->profile_picture);
             }
-            $updateData['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $updateData['profile_picture'] = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
         }
 
         $user->update($updateData);
@@ -181,7 +181,7 @@ class UserController extends Controller
 
             $profilePicturePath = null;
             if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('profile_pictures', 'public');
+                $profilePicturePath = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
             }
 
             $user = User::create([
@@ -199,7 +199,7 @@ class UserController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'User created successfully! Default password: 123456',
+                'message' => 'New user created successfully!',
                 'redirect' => route('users.index')
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -316,7 +316,7 @@ class UserController extends Controller
                 if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
                     Storage::disk('public')->delete($user->profile_picture);
                 }
-                $updateData['profile_picture'] = $request->file('profile_picture')->store('profile_pictures', 'public');
+                $updateData['profile_picture'] = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
             }
 
             $user->update($updateData);

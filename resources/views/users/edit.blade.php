@@ -133,40 +133,6 @@
     </div>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm">
-    <div class="p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4"><i class="fas fa-key mr-2 text-green-500"></i>Change Password</h3>
-        <form id="passwordForm" method="POST">
-            @csrf
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                    <input id="current_password" type="password" name="current_password"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <span class="text-red-500 text-xs hidden" id="current_password_error"></span>
-                </div>
-                <div>
-                    <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                    <input id="new_password" type="password" name="new_password"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <span class="text-red-500 text-xs hidden" id="new_password_error"></span>
-                </div>
-                <div>
-                    <label for="new_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                    <input id="new_password_confirmation" type="password" name="new_password_confirmation"
-                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                </div>
-            </div>
-            <div class="mt-4">
-                <button type="submit" id="passwordSubmitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
-                    <span id="passwordSubmitText"><i class="fas fa-key mr-2"></i>Update Password</span>
-                    <span id="passwordSubmitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Updating...</span>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <!-- Image Lightbox Modal -->
 <div id="imageLightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden items-center justify-center p-4" style="opacity: 0; transition: opacity 0.3s ease;">
     <button id="closeLightbox" class="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10">
@@ -286,58 +252,6 @@ $(document).ready(function() {
         });
     });
 
-    $('#passwordForm').submit(function(e) {
-        e.preventDefault();
-        
-        $('#passwordSubmitBtn').prop('disabled', true);
-        $('#passwordSubmitText').addClass('hidden');
-        $('#passwordSubmitLoading').removeClass('hidden');
-        
-        $('#current_password_error, #new_password_error').addClass('hidden').text('');
-        $('#current_password, #new_password').removeClass('border-red-500');
-        
-        $.ajax({
-            url: '{{ route("users.update-password", $user) }}',
-            type: 'POST',
-            data: $(this).serialize(),
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-                'Accept': 'application/json'
-            },
-            success: function(response) {
-                if (response.success) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: response.message
-                    });
-                    $('#passwordForm')[0].reset();
-                }
-            },
-            error: function(xhr) {
-                if (xhr.status === 422) {
-                    var errors = xhr.responseJSON.errors;
-                    $.each(errors, function(key, value) {
-                        $('#' + key + '_error').text(value[0]).removeClass('hidden');
-                        $('#' + key).addClass('border-red-500');
-                    });
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Please fix the errors'
-                    });
-                } else {
-                    Toast.fire({
-                        icon: 'error',
-                        title: xhr.responseJSON.message || 'Error updating password'
-                    });
-                }
-            },
-            complete: function() {
-                $('#passwordSubmitBtn').prop('disabled', false);
-                $('#passwordSubmitText').removeClass('hidden');
-                $('#passwordSubmitLoading').addClass('hidden');
-            }
-        });
     });
-});
 </script>
 @endsection

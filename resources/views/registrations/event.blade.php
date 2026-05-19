@@ -7,11 +7,11 @@
 <div class="bg-white rounded-lg shadow-md">
     <div class="flex justify-between items-center p-6 border-b border-gray-200 gap-4">
         <div>
-            <a href="{{ route('event-registrations.index') }}" class="inline-flex items-center text-sm text-green-700 hover:text-green-800 mb-1">
+            <a href="{{ route('events.index') }}" class="inline-flex items-center text-sm text-green-700 hover:text-green-800 mb-1">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
-                Back to Event Registrations
+                Back to Events
             </a>
             <h4 class="text-xl font-semibold text-gray-800">{{ $event->title }}</h4>
             <p class="text-sm text-gray-500 mt-1">Participant list for this event.</p>
@@ -23,6 +23,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m2.1-5.4a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"></path>
                 </svg>
             </div>
+            <select name="event_filter" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option value="upcoming" {{ ($eventFilter ?? 'upcoming') === 'upcoming' ? 'selected' : '' }}>Upcoming Events</option>
+                <option value="past" {{ ($eventFilter ?? '') === 'past' ? 'selected' : '' }}>Past Events</option>
+            </select>
             <button type="submit" class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white text-sm font-medium transition-colors">
                 Search
             </button>

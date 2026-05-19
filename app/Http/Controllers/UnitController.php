@@ -23,7 +23,7 @@ class UnitController extends Controller
             ->addColumn('members_count', function ($unit) {
                 $count = $unit->users_count ?? 0;
                 if ($count > 0) {
-                    return '<span onclick="openUnitMembersModal(' . $unit->id . ', \'' . addslashes($unit->name) . '\', ' . $count . ')" class="cursor-pointer px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium hover:bg-indigo-200 transition-colors">' . $count . ' member' . ($count != 1 ? 's' : '') . '</span>';
+                    return '<a href="' . route('users.index') . '?unit_id=' . $unit->id . '" class="cursor-pointer px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium hover:bg-indigo-200 transition-colors">' . $count . ' member' . ($count != 1 ? 's' : '') . '</a>';
                 }
                 return '<span class="px-2 py-1 bg-gray-100 text-gray-500 rounded text-xs font-medium">' . $count . ' member' . ($count != 1 ? 's' : '') . '</span>';
             })

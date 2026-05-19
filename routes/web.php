@@ -24,7 +24,6 @@ Route::get('/test', function () {
             'dashboard' => route('dashboard'),
             'users.index' => route('users.index'),
             'events.index' => route('events.index'),
-            'event_registrations.index' => route('event-registrations.index'),
             'login' => route('login')
         ]
     ]);
@@ -85,7 +84,6 @@ Route::middleware('auth')->group(function () {
     Route::get('units-datatable', [UnitController::class, 'getUnitsData'])->name('units.datatable');
 
     Route::prefix('event-registrations')->name('event-registrations.')->group(function () {
-        Route::get('/', [EventRegistrationController::class, 'index'])->name('index');
         Route::get('/{event}', [EventRegistrationController::class, 'eventRegistrations'])->name('event');
         Route::get('/{event}/registrations/{registration}', [EventRegistrationController::class, 'show'])->name('show');
     });

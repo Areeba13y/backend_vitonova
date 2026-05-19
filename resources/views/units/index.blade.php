@@ -4,7 +4,6 @@
 @section('page_title', 'Units')
 
 @section('content')
-<x-unit-members-modal />
 <div class="mb-6 flex items-center justify-between">
     <div>
         <h2 class="text-xl font-semibold text-gray-800">All Units</h2>

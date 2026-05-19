@@ -478,6 +478,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
     <script>
+        function toggleActionsMenu(checkbox) {
+            const menuEl = checkbox.closest('.actions-menu');
+            if (checkbox.checked) {
+                // Close all other menus first
+                $('.actions-menu').removeClass('active');
+                $('.actions-dropdown').hide();
+                $('.actions-menu .hamburger input').prop('checked', false);
+                // Open this menu
+                checkbox.checked = true;
+                menuEl.classList.add('active');
+                menuEl.querySelector('.actions-dropdown').style.display = 'block';
+            } else {
+                menuEl.classList.remove('active');
+                menuEl.querySelector('.actions-dropdown').style.display = 'none';
+            }
+        }
+
         // Wait for jQuery to be ready
         jQuery(document).ready(function($) {
             const Toast = Swal.mixin({
@@ -598,23 +615,6 @@
             
             // Reset loaders on page load (in case user came back with back button)
             resetNavLoaders();
-            
-            function toggleActionsMenu(checkbox) {
-                const menuEl = checkbox.closest('.actions-menu');
-                if (checkbox.checked) {
-                    // Close all other menus first
-                    $('.actions-menu').removeClass('active');
-                    $('.actions-dropdown').hide();
-                    $('.actions-menu .hamburger input').prop('checked', false);
-                    // Open this menu
-                    checkbox.checked = true;
-                    menuEl.classList.add('active');
-                    menuEl.querySelector('.actions-dropdown').style.display = 'block';
-                } else {
-                    menuEl.classList.remove('active');
-                    menuEl.querySelector('.actions-dropdown').style.display = 'none';
-                }
-            }
         });
         
         function resetNavLoaders() {

@@ -43,7 +43,7 @@ class EventController extends Controller
     
     public function getEventsData(Request $request)
     {
-        $events = Event::withCount('registrations')->select('events.*');
+        $events = Event::select('events.*');
 
         return DataTables::of($events)
             ->addIndexColumn()
@@ -57,7 +57,8 @@ class EventController extends Controller
                 return $event->event_date?->format('Y-m-d') ?? '-';
             })
             ->addColumn('registrations_count', function ($event) {
-                return $event->registrations_count ?? 0;
+                $count = $event->registrations()->withTrashed()->count();
+                return '<a href="' . url('/event-registrations/' . $event->id) . '" class="cursor-pointer px-2 py-1 bg-indigo-100 text-indigo-700 rounded text-xs font-medium hover:bg-indigo-200 transition-colors">' . $count . ' registration' . ($count != 1 ? 's' : '') . '</a>';
             })
             ->addColumn('actions', function ($event) {
                 return '<div class="actions-menu">
@@ -81,7 +82,7 @@ class EventController extends Controller
                     </div>
                 </div>';
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['actions', 'registrations_count'])
             ->make(true);
     }
 
