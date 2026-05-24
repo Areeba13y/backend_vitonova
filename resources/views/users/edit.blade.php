@@ -4,24 +4,31 @@
 @section('page_title', 'Edit User')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">Edit User</h2>
-        <p class="text-sm text-gray-500 mt-1">Update user details</p>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-user-edit"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">Edit User</h2>
+                <p class="text-sm text-gray-500 mt-1">Update user details</p>
+            </div>
+        </div>
+        <a href="{{ route('users.index') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Users
+        </a>
     </div>
-    <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>
-        Back to Users
-    </a>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm mb-6">
-    <div class="p-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
+    <div class="p-4 sm:p-6">
         <form id="userForm" method="POST" class="space-y-4">
             @csrf
             @method('PUT')
             
-            <div class="flex items-center space-x-6 mb-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
                 <div class="shrink-0">
                     <div id="avatarContainer" class="relative cursor-pointer group">
                         @if($user->profile_picture)
@@ -120,11 +127,11 @@
                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none">{{ $user->details }}</textarea>
             </div>
 
-            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
-                <a href="{{ route('users.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-gray-100">
+                <a href="{{ route('users.index') }}" class="w-full sm:w-auto px-4 py-2 text-center bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
                     Cancel
                 </a>
-                <button type="submit" id="submitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                <button type="submit" id="submitBtn" class="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                     <span id="submitText"><i class="fas fa-save mr-2"></i>Update User</span>
                     <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Updating...</span>
                 </button>

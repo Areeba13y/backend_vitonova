@@ -4,26 +4,28 @@
 @section('page_title', 'Units')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">All Units</h2>
-        <p class="text-sm text-gray-500 mt-1">Manage your organizational units</p>
-    </div>
-    <a href="{{ route('units.create') }}" class="inline-flex items-center px-4 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm shadow-sm transition-colors">
-        <i class="fas fa-plus mr-2"></i>
-        Add Unit
-    </a>
-</div>
-
-<div class="bg-white rounded-lg shadow-sm">
-    <div class="p-6 relative">
-        <div id="unitsTableLoading" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg" style="display: none;">
-            <div class="flex items-center">
-                <i class="fas fa-spinner fa-spin text-green-500 text-2xl mr-3"></i>
-                <span class="text-gray-600">Loading data...</span>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-building"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800 leading-tight">All Units</h2>
+                <p class="text-sm text-gray-500 mt-1">Manage your organizational units</p>
             </div>
         </div>
-        <table id="unitsTable" class="w-full">
+        <a href="{{ route('units.create') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-5 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold text-sm shadow-sm transition-colors">
+            <i class="fas fa-plus mr-2"></i>
+            Add Unit
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div class="p-3 sm:p-4 lg:p-6 relative">
+        <div class="overflow-x-auto lg:overflow-visible" id="unitsTableScrollWrap">
+        <table id="unitsTable" class="w-full min-w-[700px]">
             <thead>
                 <tr>
                     <th class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider pb-3">Name</th>
@@ -34,25 +36,54 @@
             <tbody class="text-sm text-gray-600">
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 
 <script>
 $(document).ready(function() {
+    function applyUnitsTableResponsiveClasses() {
+        const wrapper = $('#unitsTable_wrapper');
+        if (!wrapper.length) {
+            return;
+        }
+
+        wrapper.find('> .units-table-toolbar').addClass('flex flex-col lg:flex-row lg:items-center gap-3');
+        wrapper.find('.units-length').addClass('w-full');
+        wrapper.find('.units-filter').addClass('w-full lg:w-auto lg:ml-auto');
+        wrapper.find('.units-export').addClass('w-full lg:w-auto lg:ml-3');
+
+        wrapper.find('.dataTables_length label').addClass('flex items-center gap-2 text-sm font-medium text-gray-600');
+        wrapper.find('.dataTables_length select').addClass('!h-11 !rounded-xl !border-gray-200 !shadow-none bg-gray-50');
+
+        wrapper.find('.dataTables_filter').addClass('lg:ml-0');
+        wrapper.find('.dataTables_filter label').addClass('block w-full');
+        wrapper.find('.dataTables_filter input').addClass('!w-full !h-11 !rounded-xl !border-gray-200 !shadow-none bg-gray-50');
+        const searchInput = wrapper.find('.dataTables_filter input');
+        if (window.innerWidth >= 1280) {
+            searchInput.css('width', '20rem');
+        } else if (window.innerWidth >= 1024) {
+            searchInput.css('width', '18rem');
+        } else {
+            searchInput.css('width', '100%');
+        }
+
+        wrapper.find('.dt-buttons').addClass('w-full flex justify-center lg:justify-end');
+        wrapper.find('.dt-button').addClass('!w-full md:!w-auto !h-11 !mx-0 !rounded-xl !px-5 !font-semibold !text-sm');
+
+        wrapper.find('.units-table-footer').addClass('flex flex-col gap-3 md:flex-row md:items-center md:justify-between');
+        wrapper.find('.dataTables_info').addClass('!float-none text-center md:text-left !text-sm !text-gray-500');
+        wrapper.find('.dataTables_paginate').addClass('!float-none flex justify-center md:justify-end');
+    }
+
     $('#unitsTable').DataTable({
         serverSide: true,
+        processing: true,
         ajax: {
             url: '{{ route("units.datatable") }}',
             type: 'GET',
-            beforeSend: function() {
-                $('#unitsTableLoading').show();
-            },
-            complete: function() {
-                $('#unitsTableLoading').hide();
-            },
             error: function(xhr, error, thrown) {
                 console.error('DataTable Error:', xhr.responseText);
-                $('#unitsTableLoading').hide();
             }
         },
         columns: [
@@ -61,11 +92,19 @@ $(document).ready(function() {
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
         order: [[0, 'asc']],
-        dom: '<"flex justify-between items-center mb-4"<"flex items-center"l><"flex-1"f><"flex items-center"B>>rtip',
+        autoWidth: false,
+        dom: '<"units-table-toolbar mb-4"<"units-length"l><"units-filter"f><"units-export"B>>rt<"units-table-footer mt-4"ip>',
         buttons: [
-            { extend: 'csv', className: 'mr-2', text: '<i class="fas fa-file-csv mr-1"></i> CSV' }
+            { extend: 'csv', className: '', text: '<i class="fas fa-file-csv mr-2"></i>CSV' }
         ],
+        initComplete: function() {
+            applyUnitsTableResponsiveClasses();
+        },
+        drawCallback: function() {
+            applyUnitsTableResponsiveClasses();
+        },
         language: {
+            processing: '<div class="flex items-center justify-center"><i class="fas fa-spinner fa-spin text-green-500 text-lg mr-2"></i> Loading data...</div>',
             search: "",
             searchPlaceholder: "Search units...",
             lengthMenu: "Show _MENU_",

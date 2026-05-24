@@ -4,28 +4,35 @@
 @section('page_title', 'Collaboration Details')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">{{ $collaboration->organization_name }}</h2>
-        <p class="text-sm text-gray-500 mt-1">Partnership details</p>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">{{ $collaboration->organization_name }}</h2>
+                <p class="text-sm text-gray-500 mt-1">Partnership details</p>
+            </div>
+        </div>
+        <a href="{{ route('collaborations.index') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Collaborations
+        </a>
     </div>
-    <a href="{{ route('collaborations.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>
-        Back to Collaborations
-    </a>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
     <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div class="p-6">
-                <div class="flex items-start justify-between mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row items-start justify-between gap-4 mb-6">
                     @if($collaboration->logo)
                     <div class="w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
                         <img src="{{ asset($collaboration->logo) }}" alt="{{ $collaboration->organization_name }}" class="w-full h-full object-contain">
                     </div>
                     @endif
-                    <div class="flex-1 ml-6">
+                    <div class="flex-1 sm:ml-6">
                         @if($collaboration->subtitle)
                         <h3 class="text-lg font-medium text-gray-600 mb-2">{{ $collaboration->subtitle }}</h3>
                         @endif
@@ -59,7 +66,7 @@
     </div>
     
     <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Details</h3>
             <div class="space-y-4">
                 <div class="p-4 bg-gray-50 rounded-lg">

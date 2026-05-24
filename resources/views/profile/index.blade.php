@@ -4,20 +4,20 @@
 @section('page_title', 'My Profile')
 
 @section('content')
-<div class="mb-6">
+<div class="mb-4 sm:mb-6">
     <h2 class="text-xl font-semibold text-gray-800">My Profile</h2>
     <p class="text-sm text-gray-500 mt-1">Manage your profile information and password</p>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
     <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white rounded-lg shadow-sm">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
             <div class="px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-800">Profile Information</h3>
             </div>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <form id="profileForm" enctype="multipart/form-data" class="space-y-4">
-                    <div class="flex items-center space-x-6 mb-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-6">
                         <div class="shrink-0">
                             <div id="avatarContainer" class="relative cursor-pointer group">
                                 @if($user->profile_picture)
@@ -90,7 +90,7 @@
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100">
-                        <button type="submit" id="profileSubmitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                        <button type="submit" id="profileSubmitBtn" class="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                             <span id="profileSubmitText"><i class="fas fa-save mr-2"></i>Save Changes</span>
                             <span id="profileSubmitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
                         </button>
@@ -101,11 +101,11 @@
     </div>
 
     <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
             <div class="px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-800">Change Password</h3>
             </div>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 <form id="passwordForm" class="space-y-4">
                     <div>
                         <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password *</label>
@@ -147,7 +147,7 @@
                     </div>
 
                     <div class="flex justify-end pt-4 border-t border-gray-100">
-                        <button type="submit" id="passwordSubmitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                        <button type="submit" id="passwordSubmitBtn" class="w-full sm:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                             <span id="passwordSubmitText"><i class="fas fa-key mr-2"></i>Update Password</span>
                             <span id="passwordSubmitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Updating...</span>
                         </button>
@@ -156,11 +156,11 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm mt-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 mt-6">
             <div class="px-6 py-4 border-b border-gray-100">
                 <h3 class="text-lg font-semibold text-gray-800">Account Info</h3>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-4 sm:p-6 space-y-4">
                 <div class="p-4 bg-gray-50 rounded-lg">
                     <p class="text-sm text-gray-500 mb-1">Role</p>
                     <p class="font-medium text-gray-800">{{ $user->role->name ?? 'N/A' }}</p>

@@ -358,6 +358,31 @@
             border-color: #22c55e;
             box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
         }
+        /* Keep processing indicator visible and scoped to each table wrapper */
+        .dataTables_wrapper {
+            position: relative;
+        }
+        .dataTables_wrapper .dataTables_processing {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 30;
+            min-width: 100px;
+            max-width: 150px;
+            text-align: center;
+            border: 1px solid #bbf7d0;
+            background: rgba(240, 253, 244, 0.96);
+            color: #166534;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(17, 24, 39, 0.08);
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            height: auto;
+        }
         /* Prevent horizontal scroll */
         html, body {
             overflow-x: hidden !important;
@@ -406,18 +431,18 @@
         window.baseUrl = '{{ url("/") }}';
     </script>
 </head>
-<body class="min-h-screen flex" style="background-color: #f3f4f6;">
+<body class="min-h-screen flex overflow-x-hidden" style="background-color: #f3f4f6;">
     @include('layouts.sidebar')
     
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-h-screen ml-64 main-content">
+    <div class="flex-1 flex flex-col min-h-screen ml-0 lg:ml-64 main-content">
         <!-- Top Bar -->
-        <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+        <div class="bg-white border-b border-gray-200 px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30">
             <div class="flex items-center space-x-4">
-                <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+                <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors" aria-label="Open menu">
                     <i class="fas fa-bars text-lg"></i>
                 </button>
-                <h1 class="text-xl font-semibold text-gray-800">@yield('page_title', 'Dashboard')</h1>
+                <h1 class="text-lg sm:text-xl font-semibold text-gray-800 truncate">@yield('page_title', 'Dashboard')</h1>
             </div>
             <div class="flex items-center space-x-4">
                 <div class="relative">
@@ -429,7 +454,7 @@
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                         </div>
                         @endif
-                        <span class="text-sm font-medium text-gray-700">{{ auth()->user()->name ?? 'Admin' }}</span>
+                        <span class="hidden sm:inline text-sm font-medium text-gray-700">{{ auth()->user()->name ?? 'Admin' }}</span>
                         <i class="fas fa-chevron-down text-xs text-gray-400 transition-transform" id="dropdownArrow"></i>
                     </button>
                     
@@ -457,7 +482,7 @@
         </div>
         
         <!-- Main Content -->
-        <main class="flex-1 px-6 py-6">
+        <main class="flex-1 px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
             @yield('content')
         </main>
         
@@ -516,18 +541,46 @@
 
             // Mobile menu toggle
             const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-menu-overlay');
+
+            function openMobileMenu() {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            }
+
+            function closeMobileMenu() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
             
             if (mobileMenuToggle && sidebar && overlay) {
                 mobileMenuToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('-translate-x-full');
-                    overlay.classList.toggle('hidden');
+                    if (sidebar.classList.contains('-translate-x-full')) {
+                        openMobileMenu();
+                    } else {
+                        closeMobileMenu();
+                    }
                 });
                 
                 overlay.addEventListener('click', function() {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('hidden');
+                    closeMobileMenu();
+                });
+
+                if (mobileMenuClose) {
+                    mobileMenuClose.addEventListener('click', function() {
+                        closeMobileMenu();
+                    });
+                }
+
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth >= 1024) {
+                        overlay.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    }
                 });
             }
 

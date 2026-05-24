@@ -4,26 +4,33 @@
 @section('page_title', 'View User')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">User Details</h2>
-        <p class="text-sm text-gray-500 mt-1">View user information</p>
-    </div>
-    <div class="flex items-center space-x-2">
-        <a href="{{ route('users.edit', $user) }}" class="inline-flex items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors">
-            <i class="fas fa-edit mr-2"></i>
-            Edit
-        </a>
-        <a href="{{ route('users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
-            <i class="fas fa-arrow-left mr-2"></i>
-            Back
-        </a>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-user"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">User Details</h2>
+                <p class="text-sm text-gray-500 mt-1">View user information</p>
+            </div>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+            <a href="{{ route('users.edit', $user) }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-sm transition-colors">
+                <i class="fas fa-edit mr-2"></i>
+                Edit
+            </a>
+            <a href="{{ route('users.index') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm">
-    <div class="p-6">
-        <div class="flex items-start space-x-6 mb-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div class="p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
             @if($user->profile_picture)
                 <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-xl object-cover">
             @else
@@ -85,7 +92,7 @@
         </div>
 
         <div class="mt-6 pt-6 border-t border-gray-100 flex justify-end">
-            <button onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->name) }}')" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-sm transition-colors">
+            <button onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->name) }}')" class="w-full sm:w-auto px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium text-sm transition-colors">
                 <i class="fas fa-trash mr-2"></i>
                 Delete User
             </button>

@@ -4,9 +4,9 @@
 @section('page_title', 'Event Registrations')
 
 @section('content')
-<div class="space-y-6">
-    <div class="bg-white rounded-lg shadow-md">
-        <div class="p-6 border-b border-gray-200">
+<div class="space-y-4 sm:space-y-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="p-4 sm:p-6 border-b border-gray-200">
             <a href="{{ route('event-registrations.event', $event) }}" class="inline-flex items-center text-sm text-green-700 hover:text-green-800 mb-1">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -18,9 +18,9 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">User Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Application Responses</h3>
                 <div class="space-y-5">
                     <div>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="space-y-6">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Registration Summary</h3>
                 <div class="space-y-4">
                     <div>
@@ -103,7 +103,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Event Information</h3>
                 <div class="space-y-4">
                     <div>

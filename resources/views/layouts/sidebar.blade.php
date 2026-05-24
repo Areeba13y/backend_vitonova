@@ -1,17 +1,3 @@
-<!-- Mobile Menu Toggle -->
-<div class="lg:hidden fixed top-4 left-4 z-50">
-    <label class="hamburger cursor-pointer" id="mobile-menu-toggle">
-        <input type="checkbox" id="hamburger-checkbox">
-        <svg viewBox="0 0 32 32" class="w-8 h-8">
-            <path class="line line-top-bottom" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"></path>
-            <path class="line" d="M7 16 27 16"></path>
-        </svg>
-    </label>
-</div>
-
-<!-- Mobile Overlay -->
-<div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
-
 <!-- Sidebar -->
 <div id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
     <div class="flex flex-col h-full">
@@ -27,11 +13,11 @@
                 </div>
             </div>
             <!-- Mobile Close Button -->
-            <label class="lg:hidden cursor-pointer" onclick="document.getElementById('sidebar').classList.add('-translate-x-full'); document.getElementById('mobile-menu-overlay').classList.add('hidden');">
+            <button type="button" id="mobile-menu-close" class="lg:hidden cursor-pointer" aria-label="Close menu">
                 <svg class="w-6 h-6 text-gray-500 hover:text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
-            </label>
+            </button>
         </div>
         
         <!-- Navigation Menu -->
@@ -118,27 +104,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const logoutForm = document.getElementById('sidebar-logout-form');
-        const hamburgerCheckbox = document.getElementById('hamburger-checkbox');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('mobile-menu-overlay');
-        
-        if (hamburgerCheckbox && sidebar && overlay) {
-            hamburgerCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    sidebar.classList.remove('-translate-x-full');
-                    overlay.classList.remove('hidden');
-                } else {
-                    sidebar.classList.add('-translate-x-full');
-                    overlay.classList.add('hidden');
-                }
-            });
-            
-            overlay.addEventListener('click', function() {
-                hamburgerCheckbox.checked = false;
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            });
-        }
         
         if (logoutForm) {
             logoutForm.addEventListener('submit', function(e) {

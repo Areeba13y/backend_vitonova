@@ -4,27 +4,34 @@
 @section('page_title', 'Event Details')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">{{ $event->title }}</h2>
-        <p class="text-sm text-gray-500 mt-1">Event details</p>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-calendar-day"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">{{ $event->title }}</h2>
+                <p class="text-sm text-gray-500 mt-1">Event details</p>
+            </div>
+        </div>
+        <a href="{{ route('events.index') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Events
+        </a>
     </div>
-    <a href="{{ route('events.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>
-        Back to Events
-    </a>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
     <div class="lg:col-span-2">
-        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             @if($event->image)
             <div class="h-64 overflow-hidden">
                 <img src="{{ asset($event->image) }}" alt="{{ $event->title }}" class="w-full h-full object-cover">
             </div>
             @endif
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
+            <div class="p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
                     <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">{{ $event->category }}</span>
                     <span class="text-sm text-gray-500">Created {{ $event->created_at->format('M d, Y') }}</span>
                 </div>
@@ -47,7 +54,7 @@
     </div>
     
     <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
             <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Stats</h3>
             <div class="space-y-4">
                 <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">

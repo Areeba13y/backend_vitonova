@@ -4,23 +4,30 @@
 @section('page_title', 'Create Event')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">Add New Event</h2>
-        <p class="text-sm text-gray-500 mt-1">Create a new event</p>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-calendar-plus"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">Add New Event</h2>
+                <p class="text-sm text-gray-500 mt-1">Create a new event</p>
+            </div>
+        </div>
+        <a href="{{ route('events.index') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Events
+        </a>
     </div>
-    <a href="{{ route('events.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>
-        Back to Events
-    </a>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm">
-    <div class="p-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div class="p-4 sm:p-6">
         <form id="eventForm" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             
-            <div class="flex items-end gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
                 <div class="flex-1">
                     <label for="category" class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
                     <input id="category" type="text" name="category" required
@@ -38,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="flex items-end gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
                 <div class="flex-1">
                     <label for="submission_deadline" class="block text-sm font-medium text-gray-700 mb-1">Submission Deadline *</label>
                     <input id="submission_deadline" type="date" name="submission_deadline" required
@@ -53,25 +60,25 @@
                     <span class="text-red-500 text-xs hidden" id="event_date_error"></span>
                 </div>
 
-                <div class="w-64">
+                <div class="w-full lg:w-64">
                     <label for="image" class="block text-sm font-medium text-gray-700 mb-1">Event Image *</label>
                     <input id="image" type="file" name="image" accept="image/*" required
                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                     <span class="text-red-500 text-xs hidden" id="image_error"></span>
                 </div>
 
-                <div class="flex gap-3">
-                    <a href="{{ route('events.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                <div class="flex w-full lg:w-auto gap-3">
+                    <a href="{{ route('events.index') }}" class="w-full lg:w-auto px-4 py-2 text-center bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
                         Cancel
                     </a>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                    <button type="submit" id="submitBtn" class="w-full lg:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                         <span id="submitText"><i class="fas fa-save mr-2"></i>Save Event</span>
                         <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Saving...</span>
                     </button>
                 </div>
             </div>
 
-            <div class="flex gap-6">
+            <div class="flex flex-col lg:flex-row gap-6">
                 <div class="flex-1">
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
                     <textarea id="description" name="description" rows="4" required
@@ -80,7 +87,7 @@
                     <span class="text-red-500 text-xs hidden" id="description_error"></span>
                 </div>
                 
-                <div id="imagePreviewContainer" class="hidden w-64">
+                <div id="imagePreviewContainer" class="hidden w-full lg:w-64">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Image Preview</label>
                     <div id="imagePreview" class="relative cursor-pointer group rounded-lg overflow-hidden border-2 border-gray-200 hover:border-green-400 transition-all">
                         <img id="previewImage" src="" alt="Preview" class="w-full h-40 object-cover">

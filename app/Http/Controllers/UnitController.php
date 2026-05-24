@@ -66,14 +66,18 @@ class UnitController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        Unit::create([
+        $unit = Unit::create([
             'name' => $validated['name'],
             'code' => $this->generateCode($validated['name']),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Unit created successfully.'
+            'message' => 'Unit created successfully.',
+            'unit' => [
+                'id' => $unit->id,
+                'name' => $unit->name,
+            ],
         ]);
     }
 

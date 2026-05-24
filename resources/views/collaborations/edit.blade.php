@@ -4,24 +4,31 @@
 @section('page_title', 'Edit Collaboration')
 
 @section('content')
-<div class="mb-6 flex items-center justify-between">
-    <div>
-        <h2 class="text-xl font-semibold text-gray-800">Edit Collaboration</h2>
-        <p class="text-sm text-gray-500 mt-1">Update partnership details</p>
+<div class="mb-4 sm:mb-6 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">Edit Collaboration</h2>
+                <p class="text-sm text-gray-500 mt-1">Update partnership details</p>
+            </div>
+        </div>
+        <a href="{{ route('collaborations.index') }}" class="inline-flex w-full sm:w-auto justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to Collaborations
+        </a>
     </div>
-    <a href="{{ route('collaborations.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium text-sm transition-colors">
-        <i class="fas fa-arrow-left mr-2"></i>
-        Back to Collaborations
-    </a>
 </div>
 
-<div class="bg-white rounded-lg shadow-sm">
-    <div class="p-6">
+<div class="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div class="p-4 sm:p-6">
         <form id="collaborationForm" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
             
-            <div class="flex items-end gap-4">
+            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
                 <div class="flex-1">
                     <label for="organization_name" class="block text-sm font-medium text-gray-700 mb-1">Organization Name *</label>
                     <input id="organization_name" type="text" name="organization_name" value="{{ $collaboration->organization_name }}" required
@@ -30,25 +37,25 @@
                     <span class="text-red-500 text-xs hidden" id="organization_name_error"></span>
                 </div>
 
-                <div class="w-64">
+                <div class="w-full lg:w-64">
                     <label for="logo" class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
                     <input id="logo" type="file" name="logo" accept="image/*"
                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                     <span class="text-red-500 text-xs hidden" id="logo_error"></span>
                 </div>
 
-                <div class="flex gap-3">
-                    <a href="{{ route('collaborations.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                <div class="flex w-full lg:w-auto gap-3">
+                    <a href="{{ route('collaborations.index') }}" class="w-full lg:w-auto px-4 py-2 text-center bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
                         Cancel
                     </a>
-                    <button type="submit" id="submitBtn" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+                    <button type="submit" id="submitBtn" class="w-full lg:w-auto px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
                         <span id="submitText"><i class="fas fa-save mr-2"></i>Update</span>
                         <span id="submitLoading" class="hidden"><i class="fas fa-spinner fa-spin mr-1"></i>Updating...</span>
                     </button>
                 </div>
             </div>
 
-            <div class="flex gap-6">
+            <div class="flex flex-col lg:flex-row gap-6">
                 <div class="flex-1 space-y-4">
                     <div>
                         <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
@@ -65,7 +72,7 @@
                         <span class="text-red-500 text-xs hidden" id="description_error"></span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="representative_designation" class="block text-sm font-medium text-gray-700 mb-1">Representative Designation</label>
                             <input id="representative_designation" type="text" name="representative_designation" value="{{ $collaboration->representative_designation }}"
@@ -90,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="w-64 space-y-4">
+                <div class="w-full lg:w-64 space-y-4">
                     @if($collaboration->logo)
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Current Logo</label>
