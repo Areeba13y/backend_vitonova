@@ -222,6 +222,7 @@ class TeamApplicationController extends Controller
                 'message' => 'Application approved successfully.'
             ]);
         } catch (\Exception $e) {
+            Log::error('Team Application Approve Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to approve application.'

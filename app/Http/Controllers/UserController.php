@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -189,7 +190,7 @@ class UserController extends Controller
                 'unit_id' => $request->unit_id,
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make('123456'),
+                'password' => Hash::make(Str::random(16)),
                 'contact' => $request->contact,
                 'address' => $request->address,
                 'designation' => $request->designation,

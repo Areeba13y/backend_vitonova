@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class FrontendApiTokenSeeder extends Seeder
@@ -18,7 +19,7 @@ class FrontendApiTokenSeeder extends Seeder
             ['email' => 'admin@web.com'],
             [
                 'name' => 'Admin',
-                'password' => Hash::make('123456'),
+                'password' => Hash::make(Str::random(16)),
             ]
         );
 
