@@ -110,6 +110,12 @@ $(document).ready(function() {
             { data: 'date', name: 'date', searchable: false, orderable: false },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
+            columnDefs: [
+                {
+                    targets: [5], // Index of the 'actions' column
+                    visible: false, // Hide the column in the export
+                }
+            ],
         order: [[0, 'asc']],
         autoWidth: false,
         dom: '<"messages-table-toolbar mb-4"<"messages-length"l><"messages-filter"f>>rt<"messages-table-footer mt-4"ip>',

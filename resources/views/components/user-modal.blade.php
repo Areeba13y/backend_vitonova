@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('details').value = userData.details || '';
             
             if (userData.profile_picture) {
-                profilePreview.src = "{{ asset('storage') }}/" + userData.profile_picture;
+                profilePreview.src = "{{ url('/') }}/" + userData.profile_picture;
                 profilePreview.classList.remove('hidden');
             }
             

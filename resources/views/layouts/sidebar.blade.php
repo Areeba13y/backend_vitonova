@@ -69,7 +69,7 @@
         <div class="border-t border-gray-100 p-4">
             <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors mb-2 {{ request()->routeIs('profile') ? 'bg-green-50' : '' }}">
                 @if(auth()->user()->profile_picture)
-                <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover mr-3">
+                <img src="{{ asset(auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-10 h-10 rounded-full object-cover mr-3">
                 @else
                 <div class="w-10 h-10 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center text-white font-semibold mr-3">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}

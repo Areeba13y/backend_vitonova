@@ -32,7 +32,7 @@
     <div class="p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
             @if($user->profile_picture)
-                <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-xl object-cover">
+                <img src="{{ asset($user->profile_picture) }}" alt="{{ $user->name }}" class="w-24 h-24 rounded-xl object-cover">
             @else
                 <div class="w-24 h-24 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-3xl font-bold">
                     {{ strtoupper(substr($user->name, 0, 1)) }}

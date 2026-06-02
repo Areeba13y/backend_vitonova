@@ -7,9 +7,10 @@ use App\Models\Unit;
 use App\Models\User;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -42,10 +43,8 @@ class UserController extends Controller
         ];
 
         if ($request->hasFile('profile_picture')) {
-            if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                Storage::disk('public')->delete($user->profile_picture);
-            }
-            $updateData['profile_picture'] = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
+            $this->deleteProfilePictureIfExists($user->profile_picture);
+            $updateData['profile_picture'] = $this->storeProfilePicture($request->file('profile_picture'));
         }
 
         $user->update($updateData);
@@ -181,7 +180,7 @@ class UserController extends Controller
 
             $profilePicturePath = null;
             if ($request->hasFile('profile_picture')) {
-                $profilePicturePath = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
+                $profilePicturePath = $this->storeProfilePicture($request->file('profile_picture'));
             }
 
             $user = User::create([
@@ -313,10 +312,8 @@ class UserController extends Controller
             // Handle profile picture upload
             if ($request->hasFile('profile_picture')) {
                 // Delete old profile picture if exists
-                if ($user->profile_picture && Storage::disk('public')->exists($user->profile_picture)) {
-                    Storage::disk('public')->delete($user->profile_picture);
-                }
-                $updateData['profile_picture'] = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
+                $this->deleteProfilePictureIfExists($user->profile_picture);
+                $updateData['profile_picture'] = $this->storeProfilePicture($request->file('profile_picture'));
             }
 
             $user->update($updateData);
@@ -360,6 +357,8 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
             $userName = $user->name;
+
+            $this->deleteProfilePictureIfExists($user->profile_picture);
             
             $user->delete();
 
@@ -403,7 +402,7 @@ class UserController extends Controller
             ->addIndexColumn()
             ->addColumn('name', function ($user) {
                 $avatar = $user->profile_picture 
-                    ? '<img class="w-8 h-8 rounded-full object-cover mr-3" src="' . asset('storage/' . $user->profile_picture) . '" alt="' . $user->name . '">'
+                    ? '<img class="w-8 h-8 rounded-full object-cover mr-3" src="' . asset($user->profile_picture) . '" alt="' . $user->name . '">' 
                     : '<div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-semibold text-xs mr-3">' . strtoupper(substr($user->name, 0, 1)) . '</div>';
                 return '<div class="flex items-center">' . $avatar . '<span class="font-medium text-gray-900">' . $user->name . '</span></div>';
             })
@@ -479,6 +478,7 @@ class UserController extends Controller
                             'address' => $user->address,
                             'designation' => $user->designation,
                             'profile_picture' => $user->profile_picture,
+                            'profile_picture_url' => $user->profile_picture ? asset($user->profile_picture) : null,
                             'details' => $user->details,
                             'created_at' => $user->created_at,
                             'updated_at' => $user->updated_at,
@@ -494,5 +494,31 @@ class UserController extends Controller
             'role' => $roleCode,
             'groups' => $groupedUsers,
         ]);
+    }
+
+    private function storeProfilePicture($image): string
+    {
+        $destination = public_path('uploads/user-pictures');
+
+        if (! File::exists($destination)) {
+            File::makeDirectory($destination, 0755, true);
+        }
+
+        $filename = Str::uuid()->toString() . '.' . $image->getClientOriginalExtension();
+        $image->move($destination, $filename);
+
+        return 'uploads/user-pictures/' . $filename;
+    }
+
+    private function deleteProfilePictureIfExists(?string $relativePath): void
+    {
+        if (! $relativePath || ! Str::startsWith($relativePath, 'uploads/user-pictures/')) {
+            return;
+        }
+
+        $fullPath = public_path($relativePath);
+        if (File::exists($fullPath)) {
+            File::delete($fullPath);
+        }
     }
 }

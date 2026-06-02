@@ -448,7 +448,7 @@
                 <div class="relative">
                     <button id="userDropdownBtn" class="flex items-center space-x-3 cursor-pointer hover:bg-gray-100 rounded-lg px-2 py-1 transition-colors">
                         @if(auth()->user()->profile_picture)
-                        <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover">
+                        <img src="{{ asset(auth()->user()->profile_picture) }}" alt="{{ auth()->user()->name }}" class="w-9 h-9 rounded-full object-cover">
                         @else
                         <div class="w-9 h-9 rounded-full bg-gradient-to-r from-green-400 to-green-500 flex items-center justify-center text-white font-semibold text-sm">
                             {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}

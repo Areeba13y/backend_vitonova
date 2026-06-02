@@ -22,7 +22,7 @@
                             <div id="avatarContainer" class="relative cursor-pointer group">
                                 @if($user->profile_picture)
                                 <div class="w-24 h-24 rounded-full bg-gray-100 border-4 border-gray-200 overflow-hidden transition-all duration-300 group-hover:border-green-400 group-hover:shadow-lg">
-                                    <img id="currentImage" src="{{ asset('storage/' . $user->profile_picture) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                    <img id="currentImage" src="{{ asset($user->profile_picture) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                     <img id="previewImage" src="" alt="Preview" class="w-full h-full object-cover hidden">
                                 </div>
                                 @else
@@ -211,7 +211,7 @@ function togglePasswordVisibility(inputId, btn) {
 }
 
 $(document).ready(function() {
-    let currentImageSrc = '{{ $user->profile_picture ? asset("storage/" . $user->profile_picture) : "" }}';
+    let currentImageSrc = '{{ $user->profile_picture ? asset($user->profile_picture) : "" }}';
     
     $('#profile_picture').change(function(e) {
         const file = e.target.files[0];
