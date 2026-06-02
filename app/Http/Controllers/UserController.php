@@ -185,12 +185,14 @@ class UserController extends Controller
                 $profilePicturePath = $request->file('profile_picture')->store('uploads/user-pictures', 'public');
             }
 
+            $generatedPassword = Str::random(16);
+
             $user = User::create([
                 'role_id' => $teamMemberRole?->id,
                 'unit_id' => $request->unit_id,
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make(Str::random(16)),
+                'password' => Hash::make($generatedPassword),
                 'contact' => $request->contact,
                 'address' => $request->address,
                 'designation' => $request->designation,
@@ -201,6 +203,7 @@ class UserController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'New user created successfully!',
+                'password' => $generatedPassword,
                 'redirect' => route('users.index')
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
