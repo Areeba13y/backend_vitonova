@@ -478,7 +478,7 @@ class UserController extends Controller
                             'address' => $user->address,
                             'designation' => $user->designation,
                             'profile_picture' => $user->profile_picture,
-                            'profile_picture_url' => $user->profile_picture ? asset($user->profile_picture) : null,
+                            'profile_picture_url' => $this->resolveProfilePictureUrl($user->profile_picture),
                             'details' => $user->details,
                             'created_at' => $user->created_at,
                             'updated_at' => $user->updated_at,
@@ -520,5 +520,21 @@ class UserController extends Controller
         if (File::exists($fullPath)) {
             File::delete($fullPath);
         }
+    }
+
+    private function resolveProfilePictureUrl(?string $profilePicture): string
+    {
+        if ($profilePicture && Str::startsWith($profilePicture, ['http://', 'https://'])) {
+            return $profilePicture;
+        }
+
+        if ($profilePicture) {
+            $relativePath = ltrim($profilePicture, '/');
+            if (File::exists(public_path($relativePath))) {
+                return asset($relativePath);
+            }
+        }
+
+        return asset('uploads/user-pictures/profile-placeholder.svg');
     }
 }
