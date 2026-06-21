@@ -5,6 +5,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\CollaborationController;
 use App\Http\Controllers\ContactMessageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PreviousHighlightController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,3 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'apiGetUsers']);
     Route::post('/contact', [ContactMessageController::class, 'store']);
 });
+
+// =============================================
+// PUBLIC API ROUTES FOR FRONTEND
+// =============================================
+
+// Previous Highlights - Public API for frontend display
+Route::get('/highlights', [PreviousHighlightController::class, 'getHighlights']);
+Route::get('/highlights/{id}', [PreviousHighlightController::class, 'getHighlight']);

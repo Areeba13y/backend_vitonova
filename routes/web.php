@@ -7,6 +7,8 @@ use App\Http\Controllers\EventRegistrationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TeamApplicationController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\ContactMessageController;
+use App\Http\Controllers\PreviousHighlightController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,7 +57,8 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
     Route::post('profile', [UserController::class, 'updateOwnProfile'])->name('profile.update');
     Route::post('profile/password', [UserController::class, 'updateOwnPassword'])->name('profile.password');
-    
+
+    // Event routes
     Route::get('events', [EventController::class, 'index'])->name('events.index');
     Route::get('events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('events', [EventController::class, 'store'])->name('events.store');
@@ -64,7 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::get('events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::delete('events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::get('events-datatable', [EventController::class, 'getEventsData'])->name('events.datatable');
-    
+
+    // Collaboration routes
     Route::get('collaborations', [CollaborationController::class, 'index'])->name('collaborations.index');
     Route::get('collaborations/create', [CollaborationController::class, 'create'])->name('collaborations.create');
     Route::post('collaborations', [CollaborationController::class, 'store'])->name('collaborations.store');
@@ -74,7 +78,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('collaborations/{collaboration}', [CollaborationController::class, 'destroy'])->name('collaborations.destroy');
     Route::get('collaborations-datatable', [CollaborationController::class, 'getCollaborationsData'])->name('collaborations.datatable');
     Route::patch('collaborations/{collaboration}/toggle-active', [CollaborationController::class, 'toggleActive'])->name('collaborations.toggle-active');
-    
+
+    // Unit routes
     Route::get('units', [UnitController::class, 'index'])->name('units.index');
     Route::get('units/create', [UnitController::class, 'create'])->name('units.create');
     Route::post('units', [UnitController::class, 'store'])->name('units.store');
@@ -83,6 +88,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('units/{unit}', [UnitController::class, 'destroy'])->name('units.destroy');
     Route::get('units-datatable', [UnitController::class, 'getUnitsData'])->name('units.datatable');
 
+    // Event registrations routes
     Route::prefix('event-registrations')->name('event-registrations.')->group(function () {
         Route::get('/{event}', [EventRegistrationController::class, 'eventRegistrations'])->name('event');
         Route::get('/{event}/registrations/{registration}', [EventRegistrationController::class, 'show'])->name('show');
@@ -96,15 +102,35 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/approve', [TeamApplicationController::class, 'approve'])->name('approve');
         Route::delete('/{id}', [TeamApplicationController::class, 'destroy'])->name('destroy');
     });
-});
-use App\Http\Controllers\ContactMessageController;
 
-Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
-
-Route::middleware('auth')->group(function () {
+    // Contact Messages routes
     Route::get('/admin/contacts', [ContactMessageController::class, 'index'])->name('admin.contacts.index');
     Route::get('/admin/contacts/datatable', [ContactMessageController::class, 'getMessagesData'])->name('admin.contacts.datatable');
     Route::get('/admin/contacts/user/{user}/messages', [ContactMessageController::class, 'getUserMessages'])->name('admin.contacts.messages');
     Route::patch('/admin/contacts/user/{user}/read', [ContactMessageController::class, 'markRead'])->name('admin.contacts.markRead');
     Route::delete('/admin/contacts/user/{user}', [ContactMessageController::class, 'destroy'])->name('admin.contacts.destroy');
+
+    // =============================================
+    // PREVIOUS HIGHLIGHTS ROUTES
+    // =============================================
+    Route::prefix('previous-highlights')->name('previous-highlights.')->group(function () {
+        // IMPORTANT: Put datatable route BEFORE routes with parameters
+        Route::get('/datatable', [PreviousHighlightController::class, 'getHighlightsData'])->name('datatable');
+
+        // Resource routes
+        Route::get('/', [PreviousHighlightController::class, 'index'])->name('index');
+        Route::get('/create', [PreviousHighlightController::class, 'create'])->name('create');
+        Route::post('/store', [PreviousHighlightController::class, 'store'])->name('store');
+        Route::get('/{previousHighlight}/edit', [PreviousHighlightController::class, 'edit'])->name('edit');
+        Route::put('/{previousHighlight}', [PreviousHighlightController::class, 'update'])->name('update');
+        Route::get('/{previousHighlight}', [PreviousHighlightController::class, 'show'])->name('show');
+        Route::delete('/{previousHighlight}', [PreviousHighlightController::class, 'destroy'])->name('destroy');
+    });
 });
+
+// Contact store route (public)
+Route::post('/contact', [ContactMessageController::class, 'store'])->name('contact.store');
+
+// API Routes for frontend
+Route::get('/api/highlights', [PreviousHighlightController::class, 'getHighlights']);
+Route::get('/api/highlights/{id}', [PreviousHighlightController::class, 'getHighlight']);

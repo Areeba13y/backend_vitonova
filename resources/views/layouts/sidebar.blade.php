@@ -19,7 +19,7 @@
                 </svg>
             </button>
         </div>
-        
+
         <!-- Navigation Menu -->
         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
             <!-- Dashboard -->
@@ -27,7 +27,7 @@
                 <i class="fas fa-chart-pie w-5 text-gray-400"></i>
                 <span class="ml-3 font-medium">Dashboard</span>
             </a>
-            
+
             <!-- Team Members -->
             <a href="{{ route('users.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('users.*') ? 'active' : '' }}">
                 <i class="fas fa-users w-5 text-gray-400"></i>
@@ -44,6 +44,10 @@
             <a href="{{ route('events.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('events.*') ? 'active' : '' }}">
                 <i class="fas fa-calendar-alt w-5 text-gray-400"></i>
                 <span class="ml-3 font-medium">Events</span>
+            </a>
+            <a href="{{ route('previous-highlights.index') }}" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors {{ request()->routeIs('previous-highlights.*') ? 'active' : '' }}">
+                <i class="fas fa-star w-5 text-gray-400"></i>
+                <span class="ml-3 font-medium">Highlights</span>
             </a>
 
             <!-- Collaborations -->
@@ -64,7 +68,7 @@
                 <span class="ml-3 font-medium">Messages</span>
             </a>
         </nav>
-        
+
         <!-- User Profile & Logout -->
         <div class="border-t border-gray-100 p-4">
             <a href="{{ route('profile') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors mb-2 {{ request()->routeIs('profile') ? 'bg-green-50' : '' }}">
@@ -81,13 +85,13 @@
                 </div>
                 <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
             </a>
-            
+
             <!-- Profile Button -->
             <a href="{{ route('profile') }}" id="sidebarProfileBtn" class="w-full flex items-center justify-center px-4 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors text-sm font-medium mb-2">
                 <i class="fas fa-user mr-2"></i>
                 <span>My Profile</span>
             </a>
-            
+
             <!-- Logout Button -->
             <form id="sidebar-logout-form" method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
@@ -104,40 +108,40 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const logoutForm = document.getElementById('sidebar-logout-form');
-        
+
         if (logoutForm) {
             logoutForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
                 document.getElementById('sidebarLogoutIcon').classList.add('hidden');
                 document.getElementById('sidebarLogoutText').classList.add('hidden');
                 document.getElementById('sidebarLogoutLoader').classList.remove('hidden');
-                
+
                 const formData = new FormData(this);
-                
+
                 fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        Toast.fire({
-                            icon: 'success',
-                            title: 'Logged out successfully!'
-                        });
-                        setTimeout(() => {
-                            window.location.href = '{{ url("/login") }}';
-                        }, 1000);
-                    }
-                });
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Logged out successfully!'
+                            });
+                            setTimeout(() => {
+                                window.location.href = '{{ url("/login") }}';
+                            }, 1000);
+                        }
+                    });
             });
         }
-        
+
         // Sidebar Profile Button loader
         const sidebarProfileBtn = document.getElementById('sidebarProfileBtn');
         if (sidebarProfileBtn) {
@@ -151,7 +155,7 @@
                 this.appendChild(loader);
             });
         }
-        
+
         // Reset loaders on page load (only for profile button)
         const loaders = sidebarProfileBtn ? sidebarProfileBtn.querySelectorAll('i.fa-spinner') : [];
         if (loaders.length > 0) {
