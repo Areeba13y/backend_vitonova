@@ -15,6 +15,7 @@ class Event extends Model
         'category',
         'title',
         'description',
+        'external_link',
         'submission_deadline',
         'event_date',
     ];

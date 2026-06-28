@@ -48,6 +48,14 @@
                         <p class="text-sm text-gray-500 mb-1">Event Date</p>
                         <p class="font-medium text-gray-800">{{ $event->event_date->format('M d, Y') }}</p>
                     </div>
+                    @if($event->external_link)
+                    <div>
+                        <p class="text-sm text-gray-500 mb-1">External Link</p>
+                        <a href="{{ $event->external_link }}" target="_blank" rel="noopener noreferrer" class="font-medium text-green-600 hover:text-green-700 break-all">
+                            <i class="fas fa-external-link-alt mr-1"></i>{{ $event->external_link }}
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

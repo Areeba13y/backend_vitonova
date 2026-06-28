@@ -79,6 +79,16 @@
                 </div>
             </div>
 
+            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+                <div class="flex-1">
+                    <label for="external_link" class="block text-sm font-medium text-gray-700 mb-1">External Link</label>
+                    <input id="external_link" type="url" name="external_link" value="{{ $event->external_link }}"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                           placeholder="https://... (optional — opens instead of the registration form)">
+                    <span class="text-red-500 text-xs hidden" id="external_link_error"></span>
+                </div>
+            </div>
+
             <div class="flex flex-col lg:flex-row gap-6">
                 <div class="flex-1">
                     <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description *</label>

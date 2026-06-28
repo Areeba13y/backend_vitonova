@@ -98,6 +98,7 @@ class EventController extends Controller
             'category' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'external_link' => 'nullable|url|max:2048',
             'submission_deadline' => 'required|date',
             'event_date' => 'required|date|after_or_equal:submission_deadline',
         ]);
@@ -227,6 +228,7 @@ class EventController extends Controller
             'category' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'external_link' => 'nullable|url|max:2048',
             'submission_deadline' => 'required|date',
             'event_date' => 'required|date|after_or_equal:submission_deadline',
         ]);
@@ -293,6 +295,7 @@ class EventController extends Controller
             'category' => $event->category,
             'title' => $event->title,
             'description' => $event->description,
+            'external_link' => $event->external_link,
             'submission_deadline' => $event->submission_deadline?->format('Y-m-d'),
             'event_date' => $event->event_date?->format('Y-m-d'),
             'created_at' => $event->created_at?->format('Y-m-d H:i'),
